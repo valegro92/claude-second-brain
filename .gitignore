@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+*.DS_Store
+
+# Obsidian
+.obsidian/
+.trash/
+
+# Claude config personale (non va nel repo pubblico)
+.claude/
+
+# ─────────────────────────────────────────────
+# File che diventano personali dopo il setup.
+# I template vuoti sono committati nel repo.
+# Se usi questo vault come tuo vault privato
+# e fai push, aggiungi qui le righe che vuoi.
+# ─────────────────────────────────────────────
+
+# Journal (sempre privato)
+vault/Daily/Journal/
+
+# File di references avanzati (opzionali, tipicamente personali)
+vault/references/tono-di-voce.md
+vault/references/icp.md
+vault/references/anti-icp.md
+vault/references/strategia.md
+vault/references/obiettivi.md
+vault/references/offerte.md
+vault/references/funnel.md
+vault/references/stack.md
+vault/references/operations.md
+vault/references/posizionamento.md
+vault/references/valori.md
+vault/references/scrittura-linkedin.md
+vault/references/scrittura-youtube.md
+vault/references/audience.md
+
+# Output (binari, deliverable — mai nel vault)
+*.docx
+*.pptx
+*.xlsx
+*.pdf
+
+# Backup
+*.bak
+*.tmp
