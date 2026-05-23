@@ -1,0 +1,22 @@
+# Dipendenze dell'astrazione LLM on-premise (Step 3).
+#
+# Le funzionalità di questo modulo NON aggiungono nuove dipendenze di
+# package Python: tutto poggia su pacchetti già dichiarati in
+# `pyproject.toml` (anthropic>=0.40 supporta sia il client standard che
+# `AnthropicBedrock`).
+#
+# Dipendenze opzionali / system-side (gestite dal Dockerfile):
+#   - pandoc                  (extractors/docx.py)
+#   - tesseract-ocr-ita       (extractors/pdf_ocr.py)
+#   - poppler-utils           (pdf2image)
+#   - libmagic1, ghostscript  (mime + raster PDF backup)
+#
+# Per il provider Bedrock:
+#   - L'SDK `anthropic` espone `AnthropicBedrock` quando installato con gli
+#     extra `[bedrock]`. In ambienti puliti potrebbe servire installare
+#     anche `boto3` esplicitamente. Da verificare al primo deploy reale
+#     cliente; al momento, nessuna nuova entry in pyproject.toml.
+#
+# Variabili d'ambiente runtime:
+#   ANTHROPIC_API_KEY  per provider = anthropic_api
+#   AWS_*              per provider = bedrock (catena AWS standard)
