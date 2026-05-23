@@ -1,3 +1,7 @@
+# ═══════════════════════════════════════════════
+# Sistema
+# ═══════════════════════════════════════════════
+
 # macOS
 .DS_Store
 *.DS_Store
@@ -6,41 +10,66 @@
 .obsidian/
 .trash/
 
-# Claude config personale (non va nel repo pubblico)
+# Claude config personale
 .claude/
 
-# ─────────────────────────────────────────────
-# File che diventano personali dopo il setup.
-# I template vuoti sono committati nel repo.
-# Se usi questo vault come tuo vault privato
-# e fai push, aggiungi qui le righe che vuoi.
-# ─────────────────────────────────────────────
+# ═══════════════════════════════════════════════
+# Python (toolkit Step 2)
+# ═══════════════════════════════════════════════
 
-# Journal (sempre privato)
-vault/Daily/Journal/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
 
-# File di references avanzati (opzionali, tipicamente personali)
-vault/references/tono-di-voce.md
-vault/references/icp.md
-vault/references/anti-icp.md
-vault/references/strategia.md
-vault/references/obiettivi.md
-vault/references/offerte.md
-vault/references/funnel.md
-vault/references/stack.md
-vault/references/operations.md
-vault/references/posizionamento.md
-vault/references/valori.md
-vault/references/scrittura-linkedin.md
-vault/references/scrittura-youtube.md
-vault/references/audience.md
+# ═══════════════════════════════════════════════
+# Runtime del toolkit (dati cliente — MAI in git)
+# ═══════════════════════════════════════════════
 
-# Output (binari, deliverable — mai nel vault)
+# Output del pipeline: inventory, extracted, drafts, audit, cost log
+_status/
+
+# Cartella di input per il file watcher (drop zone)
+_inbox/
+
+# Config cliente con credenziali
+bootstrap/clients/
+bootstrap/auth/.*-token.json
+bootstrap/auth/credentials.json
+bootstrap/auth/service-account-*.json
+
+# ═══════════════════════════════════════════════
+# Vault: privacy per vault realmente in uso
+# (NON applicabile al template `vault/_esempio/`)
+# ═══════════════════════════════════════════════
+
+# Journal personali (uno per persona)
+vault/Daily/*/
+!vault/Daily/_esempio-XX/
+
+# Config locale utente attivo (in CLAUDE.md, sezione [UTENTE LOCALE])
+# Nota: se vault è git-condiviso, ogni utente DEVE avere il suo CLAUDE.md locale
+# non versionato. Per ora il vault del repo è template, quindi CLAUDE.md è in git.
+
+# ═══════════════════════════════════════════════
+# Binari (mai nel vault)
+# ═══════════════════════════════════════════════
+
 *.docx
 *.pptx
 *.xlsx
 *.pdf
-
-# Backup
 *.bak
 *.tmp

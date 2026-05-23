@@ -1,0 +1,30 @@
+<tr id="row-{{ draft.name|replace('.', '-') }}" class="stato-{{ stato }}">
+  <td><code>{{ draft.name }}</code></td>
+  <td>{{ draft.tipo or '-' }}</td>
+  <td>
+    {% if draft.confidence is not none %}
+      {{ '%.2f'|format(draft.confidence) }}
+    {% else %}
+      -
+    {% endif %}
+  </td>
+  <td><span class="badge badge-{{ stato }}">{{ stato }}</span></td>
+  <td>
+    <button type="button"
+            hx-get="{{ url_for('draft_view', batch_id=batch_id, draft_name=draft.name) }}"
+            hx-target="#diff-pane"
+            hx-swap="innerHTML">view diff</button>
+    <button type="button"
+            hx-post="{{ url_for('draft_action', batch_id=batch_id, draft_name=draft.name, action='approve') }}"
+            hx-target="#row-{{ draft.name|replace('.', '-') }}"
+            hx-swap="outerHTML">approve</button>
+    <button type="button"
+            hx-post="{{ url_for('draft_action', batch_id=batch_id, draft_name=draft.name, action='reject') }}"
+            hx-target="#row-{{ draft.name|replace('.', '-') }}"
+            hx-swap="outerHTML">reject</button>
+    <button type="button"
+            hx-post="{{ url_for('draft_action', batch_id=batch_id, draft_name=draft.name, action='park') }}"
+            hx-target="#row-{{ draft.name|replace('.', '-') }}"
+            hx-swap="outerHTML">park</button>
+  </td>
+</tr>

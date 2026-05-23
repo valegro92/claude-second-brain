@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}batch_ui{% endblock %} - wiki toolkit</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="{{ url_for('index') }}">wiki toolkit / batch UI</a></strong></li>
+      </ul>
+      <ul>
+        <li><small>single-user - 127.0.0.1</small></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="container">
+    <small>Step 2 - batch approval workflow</small>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# Dipendenze di sistema e Python opzionali usate dagli extractor.
+# Le dipendenze Python obbligatorie sono già in pyproject.toml.
+
+## Binari di sistema (Mac via Homebrew, Linux via apt)
+
+# DOCX -> markdown di qualità migliore (extractors/docx.py)
+#   brew install pandoc
+#   apt install pandoc
+pandoc                              # opzionale, fallback: python-docx
+
+# OCR per PDF scansionati (extractors/pdf_ocr.py)
+#   brew install tesseract tesseract-lang
+#   apt install tesseract-ocr tesseract-ocr-ita
+tesseract                           # obbligatorio se si vuole OCR
+tesseract-ita                       # language pack italiano
+
+# Rasterizzazione PDF per OCR (extractors/pdf_ocr.py)
+#   brew install poppler
+#   apt install poppler-utils
+poppler                             # obbligatorio se si vuole OCR
+
+## Python (extras opzionali in pyproject.toml)
+
+# uv pip install -e ".[ocr]"
+pytesseract                         # binding Python per Tesseract
+pillow                              # rasterizzazione immagini
+
+# Opzionale per OCR di qualità superiore (non in pyproject, install manuale)
+# pdf2image                         # wrapper attorno a Poppler, più robusto di pdfplumber.to_image
+
+## Note operative
+
+# - Se Pandoc non è installato, extractors/docx.py cade su python-docx con warning.
+# - Se Tesseract non è installato, extractors/pdf_ocr.py ritorna quality=0 e
+#   warning chiaro (la pipeline non crasha).
+# - Lo Step 3 valuterà Claude vision come fallback per PDF scansionati low-quality.

@@ -1,36 +1,50 @@
-# references/ — Cosa puoi creare qui
+---
+tipo: moc
+owner: GB
+editor: [GB, AF]
+visibilita: azienda
+stato: vivo
+ultima-revisione: 2026-05-23
+---
 
-Questa cartella è il "firmware" del sistema — chi sei, come lavori, con chi.
-Claude la carica solo quando serve, non di default ad ogni sessione.
+# references/ — Identita aziendale (L0)
+
+Cartella statica. Cambia ogni trimestre o quando succede qualcosa di
+strutturale (riorganizzazione, nuovo posizionamento, ridenominazione di
+servizi).
+
+Claude carica i file di questa cartella **on-demand**, quando il task lo
+richiede. Mai di default all'apertura sessione.
 
 ---
 
 ## File inclusi nel template
 
-| File | Stato | Quando usarlo |
-|---|---|---|
-| `chi-sono.md` | ✅ incluso | Ogni volta che Claude deve capire chi sei |
-| `stile-scrittura.md` | ✅ incluso | Quando Claude scrive contenuti a tuo nome |
-
----
-
-## File che puoi aggiungere quando vuoi
-
-Crea solo quelli che ti servono davvero. Non devi crearli tutti subito.
-
-| File da creare | Cosa ci metti |
+| File | Quando si carica |
 |---|---|
-| `tono-di-voce.md` | Come parli con clienti diversi (formale, informale, tecnico) |
-| `icp.md` | Chi è il tuo cliente ideale — settore, dimensione, problemi |
-| `strategia.md` | Dove vuoi arrivare nel prossimo anno, le tue priorità |
-| `obiettivi.md` | Obiettivi specifici con scadenze |
-| `offerte.md` | Cosa vendi, a che prezzo, come posizioni i servizi |
-| `stack.md` | Tool che usi, abbonamenti attivi, flussi di lavoro |
+| [[chi-siamo]] | Quando serve contestualizzare l'azienda (offerte, comunicazioni esterne, onboarding) |
+| [[organigramma]] | Quando serve capire chi riporta a chi o chi decide cosa |
+| [[glossario]] | Quando emergono sigle / termini interni che vanno spiegati |
+| [[persone]] | Sempre, e' la mappa iniziali → nome / reparto / ruolo / email |
+| [[brand-voice]] | Quando Claude scrive contenuti pubblici o semi-pubblici a nome azienda |
 
 ---
 
-## Come aggiungerli
+## File che si possono aggiungere
 
-Crea il file, scrivi quello che sai in quel momento (anche solo 5 righe), e aggiorna CLAUDE.md con il percorso.
+Solo se servono davvero. Niente file vuoti "per completezza".
 
-Non devono essere perfetti. Un file imperfetto è meglio di nessun file.
+| File da creare | Contenuto |
+|---|---|
+| `valori.md` | Valori dichiarati (con esempi concreti, non slogan) |
+| `posizionamento.md` | A chi vendiamo, cosa, perche noi e non i concorrenti |
+| `dove-sta-cosa.md` | Mappa logica delle sorgenti (Drive, NAS, gestionale) con alias `[NAS]`, `[DRIVE]` |
+| `offerte.md` | Cataloghi servizi / prodotti, listini base |
+| `compliance.md` | Privacy, sicurezza, certificazioni, audit |
+
+---
+
+## Manutenzione
+
+Owner: AF. Editor: GB (Custode capo). Modifiche fuori dal rituale
+trimestrale richiedono OK esplicito di AF.

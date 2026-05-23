@@ -1,0 +1,24 @@
+# Dipendenze del package `wiki/` (CLI + pipeline + watcher).
+# Tutte già dichiarate in `pyproject.toml`; questo file è una promemoria per
+# il cantiere WATCHER + CLI, non un input per il build.
+#
+# stdlib only:
+#   - hashlib, json, logging, os, signal, threading, time
+#   - pathlib, dataclasses, datetime, mimetypes, collections, subprocess
+#
+# Third-party (vedi pyproject.toml [project.dependencies]):
+#   - click>=8.1     CLI framework
+#   - pyyaml>=6.0    parsing del config.yml
+#   - watchdog>=3.0  file watcher (inotify su Linux, FSEvents su macOS)
+#   - python-dotenv  (opzionale, per leggere ANTHROPIC_API_KEY)
+#
+# Dipendenze trasversali (peer):
+#   - scanners._base, scanners.nas, scanners.gdrive, scanners.m365,
+#     scanners.email, scanners.server
+#   - extractors._base, extractors.pdf, extractors.plain,
+#     extractors.docx (opzionale, import soft)
+#   - categorizers._enums, categorizers.rules
+#   - bootstrap.wizard
+#
+# Dipendenze esterne soft (importate via dotted path, errore se mancanti):
+#   - batch_ui.cli  (per `wiki approve`; cantiere BATCH-UI)

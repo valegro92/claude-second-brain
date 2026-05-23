@@ -1,0 +1,95 @@
+# Template di configurazione cliente — wiki-toolkit Step 2
+#
+# Generato dal wizard `wiki init`. Vive in `bootstrap/clients/<slug>/config.yml`.
+# Tutti i campi sono documentati con commenti `#`: lasciali per quando un altro
+# consulente erediterà il setup.
+#
+# Convenzioni:
+#   - Lo slug cliente è in kebab-case (es. "officina-bianchi", non "officina_bianchi").
+#   - Le iniziali Custode/Owner sono 2 caratteri MAIUSCOLI.
+#   - Le path "include"/"exclude" sono frammenti, matchati con `in str` sul path leggibile.
+#   - I valori booleani sono `true`/`false` minuscoli (YAML 1.2).
+#
+# --- Sezione: cliente -----------------------------------------------------
+cliente:
+  slug: __SLUG__                # kebab-case, usato per `bootstrap/clients/<slug>/`
+  nome: "__NOME__"              # ragione sociale leggibile
+  custode: __CUSTODE__          # 2 iniziali maiuscole (referente operativo lato cliente)
+  owner: __OWNER__              # 2 iniziali maiuscole (consulente owner, di solito Valentino)
+
+# --- Sezione: sorgenti ----------------------------------------------------
+# Ogni sorgente ha `enabled: true|false`. Le sorgenti disattivate non sono mai
+# scandagliate, nemmeno da `wiki scan` senza `--source`.
+sorgenti:
+  gdrive:
+    enabled: __GDRIVE_ENABLED__
+    workspace: ""                          # dominio Workspace del cliente, opzionale
+    auth: service-account                  # service-account | oauth-desktop
+    service_account_path: ""               # path al JSON delle credenziali (gitignored)
+    mock_data_path: ""                     # se valorizzato e file esiste, usa mock invece di API reale
+    corpora: user                          # "user" | "allDrives" (per Shared Drives)
+    page_size: 1000
+    perimetro:
+      include: []                          # path-frammenti da includere (vuoto = tutto)
+      exclude: []                          # path-frammenti da escludere
+
+  m365:
+    enabled: __M365_ENABLED__
+    tenant_id: ""
+    client_id: ""
+    client_secret: ""                      # gestire via env / keychain quando possibile
+    drive_id: ""
+    mock_data_path: ""
+
+  email:
+    enabled: __EMAIL_ENABLED__
+    provider: gmail                        # gmail | outlook
+    accounts: []                           # es. ["info@cliente.it"]
+    folders: []                            # es. ["Clienti", "Fornitori"]
+    mock_data_path: ""
+    skip_short_no_attachments: true
+    min_body_chars: 500
+
+  nas:
+    enabled: __NAS_ENABLED__
+    mount: ""                              # path locale assoluto (es. "/Volumes/NAS-cliente/condiviso")
+    perimetro:
+      include: []
+      exclude: []
+
+  server:
+    enabled: __SERVER_ENABLED__
+    mount: ""                              # idem nas: cartella montata
+    perimetro:
+      include: []
+      exclude: []
+
+# --- Sezione: filtri globali ---------------------------------------------
+# Applicati a tutte le sorgenti dallo `Scanner.apply_filters` di base.
+filtri_globali:
+  max_file_mb: 50                          # file più grandi vengono scartati con warning
+  exclude_extensions:
+    - .dwg
+    - .step
+    - .iges
+    - .mp4
+    - .mov
+    - .zip
+    - .dmg
+  exclude_paths_glob:
+    - "**/.git/**"
+    - "**/node_modules/**"
+    - "**/_ARCHIVIO/**"
+
+# --- Sezione: privacy -----------------------------------------------------
+# Vedi `_brief/04-step-2-tech-plan.md` sezione 8 per la matrice safe vs full.
+privacy:
+  modalita: __PRIVACY__                    # safe | full
+  log_dati_a_anthropic: true               # se false, disabilita anche la passata 2 del categorizer
+  redact_pii: false                        # maschera email/CF/IBAN/telefono prima di Claude
+
+# --- Sezione: batch + costi ----------------------------------------------
+batch:
+  size: 50                                 # numero bozze per batch UI
+  cost_alert_eur: 50                       # warning a soft-cap
+  cost_hard_stop_eur: 200                  # stop duro: pipeline si ferma e richiede conferma

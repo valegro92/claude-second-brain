@@ -1,0 +1,3 @@
+# Dipendenze runtime del cantiere categorizers (sottoset di pyproject.toml).
+# Documento solo informativo: il package manager autorevole è uv su pyproject.toml.
+anthropic>=0.40.0
