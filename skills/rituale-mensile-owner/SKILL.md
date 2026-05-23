@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 L'Owner, insieme ai Custodi di tutti i reparti, una volta al mese (idealmente primo lunedì del mese, 1 ora) rivede le candidate a L1 che i rituali settimanali hanno raccolto. Decide cosa entra nella memoria aziendale (`MEMORY.md`), cosa diventa una decisione archiviata permanente (ADR in `decisioni/`), cosa si scarta.
 
-È il Livello 3 del protocollo a 3 livelli. Vedi `_brief/02-framework-pmi.md` per il protocollo completo e i 6 layer.
+È il Livello 3 del protocollo a 3 livelli. Vedi `docs/06-framework-pmi.md` per il protocollo completo e i 6 layer.
 
 ---
 

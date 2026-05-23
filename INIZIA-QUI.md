@@ -52,19 +52,24 @@ Per tutto il resto, chiedi al Custode di reparto.
 
 ```
 claude-second-brain/
-├── README.md                  ← landing del prodotto
-├── INIZIA-QUI.md              ← sei qui
-├── docs/                      ← 7 documenti, vedi sopra
-├── vault/                     ← scheletro del vault PMI (template)
-├── skills/                    ← skill operative per Claude
-│   ├── setup-wizard/
-│   ├── session-lifecycle/
-│   └── vault-lint/
-└── _brief/                    ← cartella temporanea, brief dei cantieri Step 1
-                                  (sarà rimossa a fine Step 1)
+├── README.md                          ← landing del prodotto
+├── INIZIA-QUI.md                      ← sei qui
+├── docs/                              ← 7 documenti, vedi sopra
+├── vault/                             ← scheletro del vault PMI (template)
+├── skills/                            ← skill operative per Claude
+│   ├── setup-wizard-azienda/          (Atto 1: kick-off Custode)
+│   ├── setup-wizard-persona/          (onboarding nuovo collega)
+│   ├── session-lifecycle/             (Buongiorno/Buonanotte multi-utente)
+│   ├── rituale-settimanale-custode/   (review reparto, venerdì)
+│   ├── rituale-mensile-owner/         (review aziendale)
+│   └── vault-lint/                    (health-check periodico)
+├── _legacy-single-user/               ← archivio del template solista (non mantenuto)
+└── _brief/                            ← planning Step 2-3 (tech plan, MCP audit, cost+risk, naming)
 ```
 
-Il `vault/` è uno scheletro: contiene la struttura (cartelle, file vuoti con frontmatter, esempi). Si popola durante la delivery, in Atto 2.
+Il `vault/` è uno scheletro: contiene la struttura (cartelle, esempi compilati con un'azienda fittizia "Esempio Srl"). Si popola con dati reali durante la delivery, in Atto 2.
+
+I file in `_brief/` sono note di pianificazione per gli Step 2 e 3 della roadmap del prodotto (scanner+extractor, modalità on-premise, playbook commerciale finale). Non sono documentazione utente — vivono lì come riferimento di design.
 
 ---
 

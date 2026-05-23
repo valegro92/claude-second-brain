@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 Il Custode di reparto, una volta a settimana (idealmente venerdì 16:00, 30 minuti), rivede le proposte di promozione che i Contributor del reparto hanno accumulato. Le smista: alcune salgono a L3 (memoria reparto), alcune diventano nuove SOP a L2, alcune sono candidate per il rituale mensile aziendale, alcune si scartano.
 
-È il Livello 2 del protocollo a 3 livelli. Vedi `_brief/02-framework-pmi.md` per il protocollo completo e i 6 layer.
+È il Livello 2 del protocollo a 3 livelli. Vedi `docs/06-framework-pmi.md` per il protocollo completo e i 6 layer.
 
 ---
 

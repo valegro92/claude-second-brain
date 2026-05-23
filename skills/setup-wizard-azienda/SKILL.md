@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 Wizard che il Custode lancia una sola volta in fase di kick-off. Obiettivo: in 20-30 minuti il vault ha identità, organigramma, persone chiave e scheletro reparti. Non sovrascrive niente di già compilato.
 
-Vedi `_brief/02-framework-pmi.md` per la teoria dei 6 layer, dei 4 ruoli e della Regola 01-PMI.
+Vedi `docs/06-framework-pmi.md` per la teoria dei 6 layer, dei 4 ruoli e della Regola 01-PMI.
 
 ---
 

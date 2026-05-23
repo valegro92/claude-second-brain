@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 Gestisce il ciclo giornaliero di una persona nel vault aziendale: apertura, lavoro con filtro permessi, chiusura con proposta promozioni.
 
-Vedi `_brief/02-framework-pmi.md` per la teoria del protocollo a 3 livelli (giornaliero, settimanale, mensile) e dei 6 layer di memoria.
+Vedi `docs/06-framework-pmi.md` per la teoria del protocollo a 3 livelli (giornaliero, settimanale, mensile) e dei 6 layer di memoria.
 
 ---
 

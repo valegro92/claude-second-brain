@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 Lint periodico del vault multi-utente. Non fa fix automatici — produce la lista, l'utente decide cosa sistemare.
 
-Vedi `_brief/02-framework-pmi.md` per la Regola 01-PMI (5 file invece di 4) e per il frontmatter permessi standard.
+Vedi `docs/06-framework-pmi.md` per la Regola 01-PMI (5 file invece di 4) e per il frontmatter permessi standard.
 
 ---
 

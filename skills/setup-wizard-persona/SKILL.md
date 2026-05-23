@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 Il nuovo collega ha clonato il repo aziendale (o si è collegato al vault condiviso). 2 minuti, 2 domande, e ha il suo Daily attivo. Da quel momento può aprire la sessione con "Buongiorno Claude, sono <XX>".
 
-Vedi `setup-wizard-azienda` per la configurazione iniziale del vault. Vedi `_brief/02-framework-pmi.md` per i 4 ruoli wiki.
+Vedi `setup-wizard-azienda` per la configurazione iniziale del vault. Vedi `docs/06-framework-pmi.md` per i 4 ruoli wiki.
 
 ---
 
