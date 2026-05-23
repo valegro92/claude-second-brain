@@ -9,6 +9,7 @@ Comandi:
   * ``wiki approve`` — apre la batch UI (delega a ``batch_ui.cli``)
   * ``wiki watch`` — modalità sempre-in-ascolto sulla `_inbox/`
   * ``wiki status`` — riepilogo numerico (file/extracted/drafts/cost)
+  * ``wiki dashboard`` — genera ``_status/<slug>/dashboard.html`` + ``INDEX.md``
 
 Convenzioni:
   * Output sempre italiano, conciso, niente emoji.
@@ -340,6 +341,7 @@ def categorize(client: str | None) -> None:
 def reconcile(client: str | None) -> None:
     """Reconciler: dedup hash globale + dedup soft (naming pattern)."""
     slug = _resolve_client(client)
+    config = _load_config(slug)
     state_dir = _state_dir_for(slug)
     inv_dir = state_dir / "inventory"
     if not inv_dir.exists():
@@ -369,6 +371,22 @@ def reconcile(client: str | None) -> None:
     )
     click.echo(f"Reconciler: {n_dup_groups} gruppi di duplicati, {n_dup_files} file da deduplicare.")
     click.echo(f"Output: {out_dir.relative_to(REPO_ROOT)}/by_hash.json")
+
+    # Step 3: rigenerazione automatica dashboard se attiva nel config.
+    if (config.get("dashboard") or {}).get("auto"):
+        try:
+            from wiki.dashboard import generate_dashboard
+
+            vault_dir = REPO_ROOT / "vault"
+            generate_dashboard(
+                state_dir=state_dir,
+                vault_dir=vault_dir if vault_dir.exists() else None,
+                output_path=state_dir / "dashboard.html",
+                cliente=slug,
+            )
+            logger.info("Dashboard rigenerata automaticamente per %s", slug)
+        except Exception as exc:  # pragma: no cover - difensivo
+            logger.warning("Rigenerazione dashboard fallita: %s", exc)
 
 
 # --- wiki approve ---------------------------------------------------------
@@ -495,6 +513,37 @@ def status(client: str | None) -> None:
             except (json.JSONDecodeError, ValueError):
                 continue
     click.echo(f"Costo Claude cumulativo: €{cumulative:.2f}")
+
+
+# --- wiki dashboard -------------------------------------------------------
+
+
+@main.command()
+@click.option("--client", default=None, help="Slug cliente.")
+@click.option("--open", "open_browser", is_flag=True, help="Apre la dashboard nel browser di default.")
+def dashboard(client: str | None, open_browser: bool) -> None:
+    """Genera ``_status/<slug>/dashboard.html`` + ``INDEX.md`` per il cliente."""
+    slug = _resolve_client(client)
+    state_dir = _state_dir_for(slug)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    vault_dir = REPO_ROOT / "vault"
+
+    from wiki.dashboard import generate_dashboard
+
+    out_html = state_dir / "dashboard.html"
+    paths = generate_dashboard(
+        state_dir=state_dir,
+        vault_dir=vault_dir if vault_dir.exists() else None,
+        output_path=out_html,
+        cliente=slug,
+    )
+    click.echo(f"Dashboard generata: {paths['html'].relative_to(REPO_ROOT)}")
+    click.echo(f"INDEX markdown: {paths['md'].relative_to(REPO_ROOT)}")
+
+    if open_browser:
+        import webbrowser
+
+        webbrowser.open(paths["html"].resolve().as_uri())
 
 
 # --- entry point ----------------------------------------------------------

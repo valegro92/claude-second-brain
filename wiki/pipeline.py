@@ -320,6 +320,11 @@ def run_pipeline_for_file(
     # 5) Bozza nel batch corrente
     draft_path = _write_draft(state_dir, record, extraction, categoria, confidence, reason)
 
+    # 6) Step 3: rigenerazione automatica dashboard se attiva nel config
+    # (silenziosa, log info). Eseguita dopo ogni file droppato in `_inbox/` o
+    # processato batch in modo che il Custode abbia sempre lo snapshot fresco.
+    maybe_regenerate_dashboard(config, state_dir)
+
     return PipelineResult(
         record=record,
         categoria=categoria,
@@ -330,3 +335,32 @@ def run_pipeline_for_file(
         skipped=False,
         skip_reason=None,
     )
+
+
+def maybe_regenerate_dashboard(config: dict[str, Any], state_dir: Path) -> None:
+    """Rigenera la dashboard del cliente se ``config.dashboard.auto`` è ``True``.
+
+    Hook silenzioso (log info / warning), pensato per essere chiamato al
+    termine degli stage che modificano lo ``_status/`` (extract, categorize,
+    reconcile, watcher). Errori non propagati: la dashboard è ausiliaria,
+    una sua failure non deve interrompere la pipeline.
+    """
+    if not (config.get("dashboard") or {}).get("auto"):
+        return
+    try:
+        from wiki.dashboard import generate_dashboard
+
+        # Vault root: derivato risalendo da state_dir (`_status/<slug>/` →
+        # `<repo>/vault/`). Se non trovato, lascia ``None`` (la dashboard
+        # calcolerà salute vault vuota).
+        repo_root = state_dir.resolve().parent.parent
+        vault_dir = repo_root / "vault"
+        generate_dashboard(
+            state_dir=state_dir,
+            vault_dir=vault_dir if vault_dir.exists() else None,
+            output_path=state_dir / "dashboard.html",
+            cliente=state_dir.name or "ignoto",
+        )
+        logger.info("Dashboard auto-rigenerata in %s/dashboard.html", state_dir)
+    except Exception as exc:  # pragma: no cover - fail-soft
+        logger.warning("Rigenerazione dashboard fallita: %s", exc)
