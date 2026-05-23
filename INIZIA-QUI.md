@@ -10,7 +10,7 @@ Se hai clonato il repo per altri motivi (curiosità, formazione, valutazione), b
 
 ---
 
-## 3 percorsi di lettura
+## 4 percorsi di lettura
 
 ### Sei Valentino (o un consulente che porta il prodotto al cliente)
 

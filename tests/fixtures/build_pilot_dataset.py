@@ -122,12 +122,27 @@ def _write_and_age(path: Path, content: bytes | str, epoca_dt: datetime) -> Path
 
 
 def _generate_pdf(path: Path, titolo: str, body: str, epoca_dt: datetime) -> Path:
-    """Genera un PDF: usa reportlab se disponibile, altrimenti minimal-PDF."""
+    """Genera un PDF: usa reportlab se disponibile, altrimenti minimal-PDF.
+
+    Senza reportlab i PDF condividerebbero lo stesso payload byte-per-byte
+    (collisione di sha256, problemi per i test E2E che asseriscono N
+    estrazioni distinte). Aggiungiamo quindi un commento PDF univoco
+    (riga ``%`` ignorata dai parser) col path + titolo, in coda al file.
+    Resta un PDF valido, ma con sha distinto.
+    """
     try:
         from reportlab.pdfgen import canvas  # type: ignore[import-not-found]
     except ImportError:
-        # Fallback: PDF minimo (il testo "Hello PDF" è hardcoded, ma è valido).
-        return _write_and_age(path, _MINIMAL_PDF_BYTES, epoca_dt)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        salt = f"%uniq:{path.name}:{titolo}:{epoca_dt.isoformat()}\n".encode("utf-8")
+        # Il commento `%` PDF va prima di `%%EOF` per non rompere il trailer.
+        eof = b"%%EOF\n"
+        payload = _MINIMAL_PDF_BYTES
+        if payload.endswith(eof):
+            payload = payload[: -len(eof)] + salt + eof
+        else:
+            payload = payload + b"\n" + salt
+        return _write_and_age(path, payload, epoca_dt)
 
     path.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(path))
