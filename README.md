@@ -1,65 +1,96 @@
-# Claude Second Brain
+# Claude Second Brain — Toolkit Wiki PMI
 
-**Dai a Claude una memoria persistente. Basata su file sul tuo computer, non su magia.**
+**Una wiki aziendale costruita per una PMI di 30-50 persone, in 4 settimane, con Valentino al fianco del cliente.**
 
-Claude dimentica tutto a fine sessione. Se ci lavori ogni giorno — come consulente, formatore, freelancer — passi 10-15 minuti a ogni apertura a risbriefingare chi sei, su cosa stai lavorando, che decisioni hai preso.
-
-Questo sistema risolve il problema: scrivi una volta le informazioni chiave in file di testo, Claude le legge ogni mattina.
+Non è un'app, non è un SaaS, non è un abbonamento. È un toolkit consulenziale: un repo da clonare sui sistemi del cliente + 3 atti di delivery presidiati + un manuale operativo per il Custode interno.
 
 ---
 
-## Prima e dopo
+## A chi serve
 
-**Senza sistema** — ogni sessione apri Claude e scrivi:
-> *"Sono Anna, consulente HR. Sto seguendo Rossi Srl per la selezione di 5 figure tecniche, abbiamo deciso di evitare i test psico-attitudinali, preferiamo colloqui strutturati. Aiutami a preparare la traccia per il colloquio di domani."*
+Una PMI italiana, **30-50 dipendenti**, manifatturiera o servizi B2B, con 5-15 anni di patrimonio documentale sparso tra Drive condivisi, NAS, caselle email, portatili. Riconoscibile da due segnali:
 
-10 minuti di briefing. Ogni volta.
+1. **Un dolore quotidiano**: il commerciale risponde citando offerte vecchie, l'amministrazione cerca il contratto firmato e trova tre versioni, ogni nuovo assunto passa 3 settimane a chiedere "dove sta...".
+2. **Un IT/Office manager interno** — la persona che già gestisce account, accessi, NAS. È il candidato naturale a diventare **Custode** della wiki.
 
-**Con il sistema** — scrivi:
-> *Buongiorno Claude*
+Se non c'è il Custode, il prodotto non funziona. Se ci sono entrambi i segnali, sì.
 
-Claude ha già letto i tuoi file. Risponde:
-> *Sessione 47 aperta. Hai 3 progetti attivi: Rossi Srl (selezione), Bianchi (onboarding), Verdi (JD). Ieri avevi annotato che oggi tocca la traccia del colloquio Rossi. Procediamo da lì?*
+---
 
-Niente briefing. Solo lavoro.
+## Cosa cambia nella giornata di un dipendente
+
+### Prima
+
+Maria (commerciale, MR) il lunedì mattina alle 9. Cerca il contratto Rossi Srl in 3 Drive diversi (uno è quello "vecchio", uno "nuovo definitivo", uno "definitivo_v2"). Trova due versioni datate diversamente, non sa quale sia firmata. Chiede a Mario in chat. Mario le dice di chiedere a Giulia in amministrazione. Giulia non c'è. Maria intanto risponde al cliente con quello che ricorda. **15 minuti persi, risposta approssimativa.**
+
+La sera, una decisione presa in call ("a Rossi anticipiamo la consegna al 15 giugno") resta nella sua testa e in uno scambio WhatsApp. Domani non se la ricorda nessun altro.
+
+### Dopo
+
+Maria apre Cowork sul vault aziendale. Scrive *"Buongiorno Claude, sono MR"*. Claude legge memoria aziendale + memoria reparto Commerciale + suo daily personale. Risponde:
+
+> *Sessione 47 aperta. Hai 3 clienti attivi questa settimana: Rossi Srl (anticipo consegna), Bianchi Forniture (rinnovo annuale), Verdi Costruzioni (offerta nuova commessa). Ieri avevi annotato che oggi vai a chiudere l'offerta Verdi. Procediamo?*
+
+Maria lavora. A sera scrive *"Buonanotte Claude"*. Claude propone: *"Da oggi: salvo la decisione 'a Rossi anticipiamo al 15 giugno' nella memoria del cliente? E la lezione 'Verdi vuole offerte sempre via PEC, mai email' nelle procedure del reparto?"*. Maria risponde `sì, sì`. 60 secondi. Fine.
+
+Il giorno dopo, quando Luca apre il cliente Rossi, quelle decisioni sono lì.
 
 ---
 
 ## Come funziona
 
-La tua conoscenza vive in file `.md` dentro una cartella sul tuo computer. Claude li legge all'apertura della sessione. Ogni sera propone cosa vale la pena ricordare — tu confermi in 60 secondi.
+Il vault è una cartella di file `.md` sui sistemi del cliente. Strutturata in 6 layer di memoria (azienda, reparto, oggetto) con 4 ruoli operativi (Owner, Custode, Editor, Contributor) e 3 rituali (giornaliero personale, settimanale di reparto, mensile aziendale).
 
-Non è un plugin. Non è un abbonamento. È una cartella di file che controlli tu.
+Claude legge i file giusti al momento giusto. I dipendenti scrivono solo dove possono scrivere. Il Custode tiene pulito. L'Owner approva le promozioni a memoria aziendale.
+
+Nessuna magia. Nessun server intermedio. I dati restano sui sistemi del cliente.
+
+Per la teoria completa: [`docs/06-framework-pmi.md`](docs/06-framework-pmi.md).
 
 ---
 
-## Inizia
+## Come si compra
 
-```bash
-git clone https://github.com/valegro92/claude-second-brain.git
-```
+Si contatta Valentino. Una prima call di 30 minuti per verificare se sei dentro l'ICP e se hai il Custode disponibile. Se sì, parte la delivery in 3 atti:
 
-Oppure: scarica lo ZIP dal pulsante **Code → Download ZIP** in alto a destra.
+| Atto | Quando | Cosa succede |
+|---|---|---|
+| **1. Kick-off** | Giorno 1, on-site, ½ giornata | Wizard azienda, connessione MCP, perimetro privacy firmato, vault scheletro |
+| **2. Scandagliamento** | Settimana 1-2, remoto + call settimanale | Si popola il vault con i contenuti vivi del reparto pilota, batch supervisionati |
+| **3. Handover** | Giorno finale, on-site, ½ giornata | Training Custode sui 3 rituali, primo rituale fatto insieme, consegna manuale custode |
 
-Poi apri la cartella in **Cowork** o **Claude Code** e incolla questo prompt:
+**Investimento indicativo**: 8.000-15.000 € setup una tantum, opzionale 800-1.500 €/mese di manutenzione. Da validare in trattativa (vedi [`docs/01-cosa-vendi.md`](docs/01-cosa-vendi.md) per il dettaglio).
 
-```
-Leggi skills/setup-wizard/SKILL.md e segui le istruzioni per configurare il mio secondo cervello.
-```
-
-**Tempo: ~15 minuti.** Funziona con qualsiasi piano Claude, anche gratuito.
+**Esclusioni esplicite v1**: connettori a gestionali italiani senza API (TeamSystem, Zucchetti, Danea, Mexal), modalità on-premise per settori regolamentati. Verranno in v1.5 o su quotazione separata.
 
 ---
 
 ## Documentazione
 
+Sette documenti, indirizzati a chi legge in un dato momento.
+
+### Per Valentino (chi vende e consegna)
+
 | | |
 |---|---|
-| [**Guida completa**](docs/guida-formazione.md) | Installazione passo-passo + spiegazione del sistema — inizia qui se è la prima volta |
-| [**Come funziona il sistema**](docs/framework.md) | I 4 layer di memoria, le 3 regole, il protocollo di sessione |
-| [**File `.md` e grafo Obsidian**](docs/guida-markdown-e-grafo.md) | Cos'è un file markdown, come si scrive, come si usa il grafo |
-| [**Aggiungere un progetto**](docs/aggiungere-un-progetto.md) | Come strutturare un nuovo cliente, corso o idea |
-| [**Installazione step-by-step**](docs/installazione-per-dummies.md) | Per chi non ha mai aperto un Terminal o usato Git |
+| [**01 — Cosa vendi**](docs/01-cosa-vendi.md) | Playbook commerciale: ICP, pricing, esclusioni, struttura della demo, 4 casi in cui non vendere |
+| [**02 — Kick-off checklist**](docs/02-kickoff-checklist.md) | Atto 1, mezza giornata on-site. Test idoneità, wizard, perimetro privacy, MCP, inventario |
+| [**03 — Scandagliamento**](docs/03-scandagliamento.md) | Atto 2, 1-2 settimane supervisionate. Workflow batch, errori comuni, costi Claude, privacy |
+| [**04 — Handover checklist**](docs/04-handover-checklist.md) | Atto 3, mezza giornata on-site. Training Custode, primo rituale, mail decommissioning, contratto manutenzione |
+
+### Per il cliente (Custode, Owner, dipendenti)
+
+| | |
+|---|---|
+| [**05 — Manuale custode**](docs/05-manuale-custode.md) | Il manuale operativo del Custode. 6 fasi, 5 categorie, 6 trappole, 3 rituali a regime |
+| [**06 — Il framework PMI**](docs/06-framework-pmi.md) | La teoria: 6 layer di memoria, 4 ruoli, 4 regole, 3 livelli di protocollo, 8 pattern di scrittura |
+| [**07 — Manuale persone**](docs/07-manuale-persone.md) | 1 pagina per chiunque in azienda. Cosa puoi fare, cosa non devi fare, a chi chiedere |
+
+### Punto d'ingresso al repo
+
+| | |
+|---|---|
+| [**INIZIA-QUI**](INIZIA-QUI.md) | Per chi ha appena clonato il repo: 3 percorsi di lettura a seconda del ruolo |
 
 ---
 
