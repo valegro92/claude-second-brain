@@ -24,7 +24,6 @@ import json
 import logging
 import re
 import unicodedata
-from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path

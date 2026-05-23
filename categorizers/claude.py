@@ -20,7 +20,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -320,8 +319,3 @@ __all__ = [
     "PRICING_USD_PER_MTOK",
     "categorize_batch",
 ]
-
-
-# Per riferimento futuro: lasciamo asdict importato così, anche se non usato,
-# è una hint visibile per chi mantiene il file.
-_ = asdict

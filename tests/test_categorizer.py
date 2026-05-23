@@ -264,7 +264,7 @@ class TestPipeline:
         assert stats["n_llm"] == 0
         # I JSONL aggiornati hanno la categoria.
         out = (tmp_path / "inventory" / "nas.jsonl").read_text().strip().splitlines()
-        cats = [json.loads(l)["categoria"] for l in out]
+        cats = [json.loads(line)["categoria"] for line in out]
         assert all(c is not None for c in cats)
 
     def test_pipeline_con_llm_e_audit(self, tmp_path: Path):
@@ -287,7 +287,7 @@ class TestPipeline:
         # Audit ha entry sia rules che claude? Qui solo claude (rules è scattata
         # ma il record era sotto soglia, quindi va come "claude" solo).
         audit = (tmp_path / "audit" / "categorize.jsonl").read_text().strip().splitlines()
-        stages = [json.loads(l)["stage"] for l in audit]
+        stages = [json.loads(line)["stage"] for line in audit]
         assert "claude" in stages
 
         # JSONL aggiornato con la categoria scelta dall'LLM.
