@@ -1,0 +1,15 @@
+{
+  "_note": "Manifest opzionale: lo scanner email accetta anche direttamente la directory _fixtures/email_eml. Questo JSON e' un esempio del formato 'manifest' alternativo.",
+  "messages": [
+    {"path": "email_eml/001_offerta_verdi.eml", "message_id": "<001-offerta-verdi@officina-bianchi.it>"},
+    {"path": "email_eml/002_ordine_rossi_attachment.eml", "message_id": "<002-ordine-rossi@officina-bianchi.it>"},
+    {"path": "email_eml/003_fornitore_acciai.eml", "message_id": "<003-acciai-veneti@officina-bianchi.it>"},
+    {"path": "email_eml/004_breve_notifica.eml", "message_id": "<004-notifica@officina-bianchi.it>"},
+    {"path": "email_eml/005_capitolato_cliente_attachment.eml", "message_id": "<005-capitolato-bianchi@officina-bianchi.it>"},
+    {"path": "email_eml/006_richiesta_offerta.eml", "message_id": "<006-rdo-meccanica@officina-bianchi.it>"},
+    {"path": "email_eml/007_reminder_pagamento.eml", "message_id": "<007-reminder-pag@officina-bianchi.it>"},
+    {"path": "email_eml/008_invito_fiera.eml", "message_id": "<008-fiera-mecspe@officina-bianchi.it>"},
+    {"path": "email_eml/009_collaudo_macchina.eml", "message_id": "<009-collaudo-cnc@officina-bianchi.it>"},
+    {"path": "email_eml/010_riepilogo_settimana.eml", "message_id": "<010-riepilogo-sett@officina-bianchi.it>"}
+  ]
+}

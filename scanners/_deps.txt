@@ -1,0 +1,16 @@
+# Dipendenze effettivamente importate dai moduli scanners/*.py.
+# Confronto vs pyproject.toml: tutto gia' dichiarato, niente da aggiungere.
+# Questo file e' un appunto per il futuro consolidamento (rimuovere
+# dipendenze non piu' usate). Aggiornare se si modifica un import.
+
+# Stdlib (no install): hashlib, mimetypes, os, pathlib, fnmatch, json,
+# logging, datetime, email, abc, dataclasses, typing, re, collections.
+
+# Esterne:
+google-api-python-client>=2.100.0    # scanners/gdrive.py (modalita' reale)
+google-auth>=2.20.0                  # scanners/gdrive.py (service account)
+msgraph-sdk>=1.0.0                   # scanners/m365.py (modalita' reale)
+azure-identity>=1.15.0               # scanners/m365.py (ClientSecretCredential)
+
+# Opzionali (gestiti con try/except):
+python-magic>=0.4.27                 # scanners/nas.py (fallback mime sniffing)

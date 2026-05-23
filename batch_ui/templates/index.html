@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Batch disponibili{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Batch disponibili</h1>
+  <p>Elenco dei batch nella cartella <code>_status/drafts/</code>.</p>
+</hgroup>
+
+{% if not batches %}
+  <article>
+    <p>Nessun batch disponibile. Esegui prima il reconciler per generare bozze in <code>_status/drafts/&lt;batch-id&gt;/</code>.</p>
+  </article>
+{% else %}
+<figure>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Batch</th>
+        <th>Totale</th>
+        <th>Pending</th>
+        <th>Approved</th>
+        <th>Rejected</th>
+        <th>Edited</th>
+        <th>Parked</th>
+        <th>Apri</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for b in batches %}
+      <tr>
+        <td><strong>{{ b.id }}</strong></td>
+        <td>{{ b.total }}</td>
+        <td>{{ b.counts.pending }}</td>
+        <td>{{ b.counts.approved }}</td>
+        <td>{{ b.counts.rejected }}</td>
+        <td>{{ b.counts.edited }}</td>
+        <td>{{ b.counts.parked }}</td>
+        <td><a role="button" href="{{ url_for('batch_view', batch_id=b.id) }}">apri</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</figure>
+{% endif %}
+{% endblock %}

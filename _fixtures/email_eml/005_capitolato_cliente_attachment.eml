@@ -1,0 +1,41 @@
+Message-ID: <005-capitolato-bianchi@officina-bianchi.it>
+Date: Thu, 08 Aug 2024 16:30:00 +0200
+From: Anna Ferrari <a.ferrari@officina-bianchi.it>
+To: Project Manager Bianchi <pm@bianchi-srl.it>
+Subject: Capitolato definitivo lotto 3 - Bianchi Srl
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bndry-cap-bianchi"
+
+--bndry-cap-bianchi
+Content-Type: text/plain; charset=utf-8
+
+Buongiorno,
+
+in allegato trovate il capitolato definitivo per il lotto 3,
+revisione 4, con le modifiche concordate nella call del 06/08:
+- aggiornamento materiali sezione 2.1
+- nuove tolleranze meccaniche sezione 4.3
+- inserito allegato A con disegni esecutivi.
+
+In attesa di vs riscontro per procedere con la lavorazione.
+
+Cordiali saluti,
+Anna Ferrari
+Officina Bianchi Srl
+
+--bndry-cap-bianchi
+Content-Type: application/pdf; name="capitolato_lotto3_rev4.pdf"
+Content-Disposition: attachment; filename="capitolato_lotto3_rev4.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9MZW5ndGggOSA+PgpzdHJlYW0KQlQgL0YxIDEyIFRm
+IDEwMCAxMDAgVGQgKENhcGl0b2xhdG8gQmlhbmNoaSkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago=
+
+--bndry-cap-bianchi
+Content-Type: application/octet-stream; name="disegno_esecutivo_A.dwg"
+Content-Disposition: attachment; filename="disegno_esecutivo_A.dwg"
+Content-Transfer-Encoding: base64
+
+UEsDBBQAAAAIAFNQXFlAaAAAAAA=
+
+--bndry-cap-bianchi--

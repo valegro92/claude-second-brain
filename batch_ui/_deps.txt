@@ -1,0 +1,14 @@
+# Dipendenze runtime usate dal pacchetto batch_ui.
+# Tutte gia' presenti in pyproject.toml (non modificare quel file da questo cantiere).
+
+flask>=3.0.0          # server HTTP minimale
+jinja2>=3.1.0         # templating (dipendenza transitiva di flask, esplicitata per chiarezza)
+click>=8.1.0          # CLI entry point (gia' presente per altri moduli)
+
+# Stdlib usata:
+#   difflib (riservata a evoluzioni future del diff viewer)
+#   html, re, json, threading, webbrowser, pathlib, dataclasses, datetime, logging, shutil, os
+
+# Asset frontend (caricati via CDN, nessun build step):
+#   pico.css   https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css
+#   htmx       https://unpkg.com/htmx.org@1.9.12

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Batch {{ batch_id }}{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Batch {{ batch_id }}</h1>
+  <p>
+    Pending: <strong>{{ counts.pending }}</strong> -
+    Approved: <strong>{{ counts.approved }}</strong> -
+    Rejected: <strong>{{ counts.rejected }}</strong> -
+    Edited: <strong>{{ counts.edited }}</strong> -
+    Parked: <strong>{{ counts.parked }}</strong>
+  </p>
+</hgroup>
+
+<section>
+  <nav>
+    <ul>
+      <li><strong>Filtra:</strong></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id) }}">tutte</a></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id, filtro='schede') }}">schede</a></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id, filtro='dedup') }}">dedup</a></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id, filtro='persone') }}">persone</a></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id, filtro='pending') }}">solo pending</a></li>
+      <li><a href="{{ url_for('batch_view', batch_id=batch_id, filtro='approved') }}">solo approved</a></li>
+    </ul>
+    <ul>
+      <li><small>filtro attivo: <code>{{ filtro }}</code></small></li>
+    </ul>
+  </nav>
+
+  <article>
+    <header><strong>Azioni di gruppo</strong></header>
+    <form hx-post="{{ url_for('bulk_approve', batch_id=batch_id) }}"
+          hx-target="#bulk-result"
+          hx-swap="innerHTML">
+      <label>
+        Soglia confidence
+        <input type="number" name="threshold" step="0.01" min="0" max="1" value="0.85">
+      </label>
+      <button type="submit">Approve all conf &gt;= soglia</button>
+    </form>
+    <div id="bulk-result"></div>
+
+    <form hx-post="{{ url_for('flush', batch_id=batch_id) }}"
+          hx-target="#flush-result"
+          hx-swap="innerHTML"
+          hx-confirm="Confermi la flush al vault?">
+      <label>
+        Conflict policy
+        <select name="conflict_policy">
+          <option value="skip" selected>skip (default)</option>
+          <option value="overwrite">overwrite</option>
+          <option value="rename">rename</option>
+          <option value="merge">merge</option>
+        </select>
+      </label>
+      <button type="submit">Apply approved -&gt; flush to vault</button>
+    </form>
+    <div id="flush-result"></div>
+  </article>
+</section>
+
+<figure>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Bozza</th>
+        <th>Tipo</th>
+        <th>Conf</th>
+        <th>Stato</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      {% for r in rows %}
+        {% set draft = r.draft %}
+        {% set stato = r.stato %}
+        {% set ts = r.ts %}
+        {% set edits = r.edits %}
+        {% include "_draft_row.html" %}
+      {% endfor %}
+    </tbody>
+  </table>
+</figure>
+
+<section id="diff-pane">
+  <article>
+    <header><strong>Diff viewer</strong></header>
+    <p><small>Clicca "view diff" su una riga per caricare il contenuto qui.</small></p>
+  </article>
+</section>
+
+{% endblock %}

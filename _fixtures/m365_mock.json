@@ -1,0 +1,123 @@
+{
+  "value": [
+    {
+      "id": "01M365-FAKE-A001",
+      "name": "DDT_in_uscita_2024-09.xlsx",
+      "size": 73420,
+      "lastModifiedDateTime": "2024-09-30T18:02:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/produzione/Documents/DDT_in_uscita_2024-09.xlsx",
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "hashes": {"quickXorHash": "AKpQXxgVOQF=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-prod",
+        "path": "/drives/b!siteDrive-prod/root:/Logistica"
+      },
+      "createdBy": {"user": {"email": "logistica@officina-bianchi.it", "displayName": "Logistica"}},
+      "lastModifiedBy": {"user": {"email": "logistica@officina-bianchi.it", "displayName": "Logistica"}}
+    },
+    {
+      "id": "01M365-FAKE-A002",
+      "name": "Manuale_qualita_v4.2.docx",
+      "size": 215800,
+      "lastModifiedDateTime": "2024-04-18T09:45:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/qualita/Documents/Manuale_qualita_v4.2.docx",
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "hashes": {"quickXorHash": "BLrRYyhWPQG=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-qual",
+        "path": "/drives/b!siteDrive-qual/root:/Qualita"
+      },
+      "createdBy": {"user": {"email": "qualita@officina-bianchi.it", "displayName": "Qualita"}},
+      "lastModifiedBy": {"user": {"email": "qualita@officina-bianchi.it"}}
+    },
+    {
+      "id": "01M365-FAKE-A003",
+      "name": "Ordini_clienti_settembre.xlsx",
+      "size": 51200,
+      "lastModifiedDateTime": "2024-10-02T08:17:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/commerciale/Documents/Ordini_clienti_settembre.xlsx",
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "hashes": {"quickXorHash": "CMsSZzhXQRH=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-comm",
+        "path": "/drives/b!siteDrive-comm/root:/Commerciale"
+      },
+      "createdBy": {"user": {"email": "a.ferrari@officina-bianchi.it"}},
+      "lastModifiedBy": {"user": {"email": "a.ferrari@officina-bianchi.it"}}
+    },
+    {
+      "id": "01M365-FAKE-A004",
+      "name": "Presentazione_aziendale_2024.pptx",
+      "size": 4500000,
+      "lastModifiedDateTime": "2024-01-22T16:00:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/marketing/Documents/Presentazione_aziendale_2024.pptx",
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "hashes": {"quickXorHash": "DNtTaaiYRSI=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-mkt",
+        "path": "/drives/b!siteDrive-mkt/root:/Marketing"
+      },
+      "createdBy": {"user": {"email": "marketing@officina-bianchi.it"}},
+      "lastModifiedBy": {"user": {"email": "marketing@officina-bianchi.it"}}
+    },
+    {
+      "id": "01M365-FAKE-A005",
+      "name": "Report_NCR_2024-Q3.pdf",
+      "size": 287000,
+      "lastModifiedDateTime": "2024-10-05T11:30:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/qualita/Documents/Report_NCR_2024-Q3.pdf",
+      "file": {
+        "mimeType": "application/pdf",
+        "hashes": {"quickXorHash": "EOoUbbjZSTJ=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-qual",
+        "path": "/drives/b!siteDrive-qual/root:/Qualita/NCR"
+      },
+      "createdBy": {"user": {"email": "qualita@officina-bianchi.it"}},
+      "lastModifiedBy": {"user": {"email": "qualita@officina-bianchi.it"}}
+    },
+    {
+      "id": "01M365-FAKE-A006",
+      "name": "Foto_collaudo_macchina_CNC.zip",
+      "size": 62914560,
+      "lastModifiedDateTime": "2024-07-11T14:00:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/produzione/Documents/Foto_collaudo.zip",
+      "file": {
+        "mimeType": "application/zip",
+        "hashes": {"quickXorHash": "FPpVcckaTUk=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-prod",
+        "path": "/drives/b!siteDrive-prod/root:/Collaudi"
+      },
+      "createdBy": {"user": {"email": "produzione@officina-bianchi.it"}},
+      "lastModifiedBy": {"user": {"email": "produzione@officina-bianchi.it"}}
+    },
+    {
+      "id": "01M365-FAKE-A007",
+      "name": "Contratto_fornitura_AcciaiVeneti_2024.pdf",
+      "size": 412000,
+      "lastModifiedDateTime": "2024-02-08T10:00:00Z",
+      "webUrl": "https://officinabianchi.sharepoint.com/sites/acquisti/Documents/Contratto_AcciaiVeneti.pdf",
+      "file": {
+        "mimeType": "application/pdf",
+        "hashes": {"quickXorHash": "GQqWddlbUVl=="}
+      },
+      "parentReference": {
+        "driveId": "b!siteDrive-acq",
+        "path": "/drives/b!siteDrive-acq/root:/Fornitori/Acciai-Veneti"
+      },
+      "createdBy": {"user": {"email": "acquisti@officina-bianchi.it"}},
+      "lastModifiedBy": {"user": {"email": "acquisti@officina-bianchi.it"}}
+    }
+  ]
+}

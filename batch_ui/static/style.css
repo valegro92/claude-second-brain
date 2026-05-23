@@ -1,0 +1,25 @@
+/* Overrides minimali sopra Pico.css per il batch UI. */
+
+.diff-viewer pre {
+  margin: 0;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  background: transparent;
+  border: none;
+}
+
+.draft-content { border-left: 3px solid var(--pico-muted-border-color); padding-left: 0.5rem; }
+.todo-marker { background-color: #fff8c5; color: #5c4a00; }
+.warning-marker { background-color: #ffe4e1; color: #8b0000; font-weight: 600; }
+.generated { background-color: #e6ffed; color: #0a5a2a; }
+.section-header { font-weight: 700; }
+.fm-marker { color: #888; }
+.fm-line { color: #555; }
+
+.badge { display: inline-block; padding: 0 .4rem; border-radius: 0.25rem; font-size: 0.75rem; background: var(--pico-secondary-background); color: var(--pico-secondary); margin-right: 0.25rem; }
+.badge-pending { background: #eee; color: #333; }
+.badge-approved { background: #d1f5d3; color: #064d1d; }
+.badge-rejected { background: #f8d7da; color: #6a0d1a; }
+.badge-edited { background: #fff3cd; color: #6b5300; }
+.badge-parked { background: #d0e6ff; color: #0a3a6b; }

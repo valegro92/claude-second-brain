@@ -1,0 +1,33 @@
+<article>
+  <header>
+    <strong>{{ draft.name }}</strong>
+    <small>
+      {% if draft.tipo %}<span class="badge">tipo: {{ draft.tipo }}</span>{% endif %}
+      {% if draft.slug %}<span class="badge">slug: {{ draft.slug }}</span>{% endif %}
+      {% if draft.confidence is not none %}<span class="badge">conf: {{ '%.2f'|format(draft.confidence) }}</span>{% endif %}
+      <span class="badge badge-{{ stato }}">{{ stato }}</span>
+    </small>
+  </header>
+
+  {% if draft.target_path %}
+    <p><small>Target nel vault: <code>{{ draft.target_path }}</code></small></p>
+  {% else %}
+    <p><small><em>Nessun target derivabile dal frontmatter (tipo/slug mancanti o non riconosciuti).</em></small></p>
+  {% endif %}
+
+  <div class="diff-viewer">
+    {{ diff_html|safe }}
+  </div>
+
+  <footer>
+    <form hx-post="{{ url_for('draft_action', batch_id=batch_id, draft_name=draft.name, action='edit') }}"
+          hx-target="#row-{{ draft.name|replace('.', '-') }}"
+          hx-swap="outerHTML">
+      <details>
+        <summary>Edit inline</summary>
+        <textarea name="edits" rows="12" style="font-family: monospace;">{{ draft.raw }}</textarea>
+        <button type="submit">Salva edit (-&gt; stato EDITED)</button>
+      </details>
+    </form>
+  </footer>
+</article>

@@ -1,0 +1,40 @@
+Message-ID: <009-collaudo-cnc@officina-bianchi.it>
+Date: Mon, 22 Apr 2024 10:15:00 +0200
+From: Paolo Neri <p.neri@officina-bianchi.it>
+To: Giulia Bianchi <g.bianchi@officina-bianchi.it>
+Cc: Direzione Tecnica <dt@officina-bianchi.it>
+Subject: Esito collaudo nuova CNC-3 sala 2
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bndry-collaudo"
+
+--bndry-collaudo
+Content-Type: text/plain; charset=utf-8
+
+Buongiorno,
+
+ho completato il collaudo della nuova CNC-3 in sala 2.
+Esito: positivo su 47 dei 50 pezzi di test, scarto 6%.
+I 3 pezzi non conformi presentano deformazione termica eccezione
+gia' segnalata a fornitore (vedi report allegato).
+
+Macchina disponibile per produzione da lunedi' 29/04.
+Documentazione completa caricata in SharePoint /Produzione/Collaudi/CNC-3.
+
+Saluti,
+Paolo Neri
+Responsabile Produzione
+
+--bndry-collaudo
+Content-Type: text/csv; name="esito_collaudo_CNC-3.csv"
+Content-Disposition: attachment; filename="esito_collaudo_CNC-3.csv"
+
+pezzo,esito,nota
+P001,OK,
+P002,OK,
+P003,NC,deformazione termica
+P004,OK,
+P005,OK,
+P006,NC,deformazione termica
+P007,OK,
+
+--bndry-collaudo--
