@@ -250,19 +250,28 @@ def _build_active_scanners(
 @main.command()
 @click.option("--client", default=None, help="Slug cliente.")
 def extract(client: str | None) -> None:
-    """Estrae i file dell'inventory non ancora processati."""
+    """Estrae i file dell'inventory non ancora processati.
+
+    Il batch CLI usa direttamente il registry extractor invece di
+    ``run_pipeline_for_file`` (che fa dedup-skip sull'inventory: corretto per
+    il watcher, sbagliato qui dove i record sono GIA' nell'inventory dopo lo
+    scan). Skip solo se la cartella ``_status/extracted/<sha12>/`` esiste.
+    """
     slug = _resolve_client(client)
-    config = _load_config(slug)
+    _load_config(slug)  # validazione lettura config
     state_dir = _state_dir_for(slug)
     inv_dir = state_dir / "inventory"
     if not inv_dir.exists():
         click.echo("Nessun inventory. Lancia prima `wiki scan`.")
         return
 
-    from wiki.pipeline import run_pipeline_for_file
+    from extractors._base import Extractor
+    from extractors._registry import extractor_for_path
 
     n_done = 0
     n_skip = 0
+    n_no_extractor = 0
+    n_error = 0
     for jsonl in sorted(inv_dir.glob("*.jsonl")):
         for line in jsonl.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -279,12 +288,29 @@ def extract(client: str | None) -> None:
             if not p.exists():
                 n_skip += 1
                 continue
-            result = run_pipeline_for_file(p, config, state_dir)
-            if result.skipped:
+            sha = rec.get("sha256")
+            if sha and (state_dir / "extracted" / sha[:12]).exists():
                 n_skip += 1
-            else:
+                continue
+            extractor = extractor_for_path(p, mime=rec.get("mime"))
+            if extractor is None:
+                n_no_extractor += 1
+                continue
+            try:
+                result = extractor.extract(p)
+            except Exception as exc:  # pragma: no cover - difensivo
+                logger.warning("Estrazione fallita su %s: %s", p, exc)
+                n_error += 1
+                continue
+            if sha:
+                Extractor.write_extraction(result, state_dir, sha, source_record=rec)
                 n_done += 1
-    click.echo(f"Estrazione: {n_done} processati, {n_skip} skip.")
+            else:
+                n_skip += 1
+    click.echo(
+        f"Estrazione: {n_done} processati, {n_skip} skip, "
+        f"{n_no_extractor} senza extractor, {n_error} errori."
+    )
 
 
 # --- wiki categorize ------------------------------------------------------
