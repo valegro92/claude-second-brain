@@ -418,7 +418,31 @@ def approve(client: str | None) -> None:
 @main.command()
 @click.option("--client", default=None, help="Slug cliente.")
 @click.option("--debounce", type=float, default=2.0, help="Secondi di debounce.")
-def watch(client: str | None, debounce: float) -> None:
+@click.option(
+    "--log-format",
+    type=click.Choice(["text", "json"], case_sensitive=False),
+    default="text",
+    help="Formato log: text (default) o json (per ingest in osservabilità).",
+)
+@click.option(
+    "--max-retries",
+    type=int,
+    default=3,
+    help="Tentativi totali sul pipeline prima di mandare il file in DLQ.",
+)
+@click.option(
+    "--retry-backoff",
+    type=float,
+    default=5.0,
+    help="Pausa (s) fra un tentativo e il successivo.",
+)
+def watch(
+    client: str | None,
+    debounce: float,
+    log_format: str,
+    max_retries: int,
+    retry_backoff: float,
+) -> None:
     """Modalità sempre-in-ascolto sulla `_inbox/<cliente>/`."""
     slug = _resolve_client(client)
     config = _load_config(slug)
@@ -434,6 +458,9 @@ def watch(client: str | None, debounce: float) -> None:
         state_dir=state_dir,
         debounce_s=debounce,
         block=True,
+        max_retries=max_retries,
+        retry_backoff_s=retry_backoff,
+        log_format=log_format,
     )
     click.echo("Watcher terminato.")
 

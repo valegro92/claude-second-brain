@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -192,18 +191,18 @@ def _chunked(seq: list[FileRecord], n: int) -> Iterable[list[FileRecord]]:
         yield seq[i : i + n]
 
 
-def _get_anthropic_client():  # pragma: no cover - tested via mock
-    """Costruisce un client Anthropic on-demand (import lazy)."""
-    try:
-        import anthropic  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError(
-            "Il pacchetto `anthropic` non è installato. Aggiungilo via uv."
-        ) from exc
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY non impostata nell'ambiente.")
-    return anthropic.Anthropic(api_key=api_key)
+def _get_anthropic_client(config: dict[str, Any] | None = None,
+                          state_dir: Path | None = None):  # pragma: no cover - tested via mock
+    """Costruisce un client LLM on-demand attraverso l'astrazione `wiki.llm`.
+
+    Step 3: non importa più ``anthropic`` direttamente — delega a
+    :func:`wiki.llm.get_llm_client`, che sceglie il backend (anthropic_api
+    standard o bedrock) in base alla configurazione del cliente.
+    """
+    # Import locale per evitare import circolari con i caller della pipeline.
+    from wiki.llm import get_llm_client
+
+    return get_llm_client(config or {}, state_dir=state_dir)
 
 
 def categorize_batch(
@@ -214,6 +213,7 @@ def categorize_batch(
     batch_size: int = DEFAULT_BATCH_SIZE,
     state_dir: Path | None = None,
     client: Any | None = None,
+    config: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Categorizza una lista di record via Claude, in batch.
 
@@ -236,7 +236,7 @@ def categorize_batch(
         raise ValueError(f"Modalità sconosciuta: {mode}")
 
     if client is None:
-        client = _get_anthropic_client()
+        client = _get_anthropic_client(config=config, state_dir=state_dir)
 
     results: list[dict[str, Any]] = []
     for chunk in _chunked(records, batch_size):

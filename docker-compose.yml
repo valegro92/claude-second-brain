@@ -1,0 +1,91 @@
+# docker-compose per wiki-toolkit on-premise (Step 3).
+#
+# Usage:
+#   docker compose run --rm wiki-toolkit scan --client <slug>
+#   docker compose run --rm wiki-toolkit categorize --client <slug>
+#   docker compose run --rm wiki-toolkit approve --client <slug>     # batch UI
+#
+# Variabili d'ambiente:
+#   ANTHROPIC_API_KEY     se llm.provider = anthropic_api
+#   AWS_ACCESS_KEY_ID,
+#   AWS_SECRET_ACCESS_KEY,
+#   AWS_REGION,
+#   AWS_PROFILE           se llm.provider = bedrock (alternativa: ~/.aws/ montato in volume)
+#
+# Volumi:
+#   bootstrap/clients/  config + auth cliente (mai in git)
+#   _status/            output runtime (mai in git, MAI esposto fuori dal cliente)
+#   _inbox/             drop zone watcher
+#   vault/              vault del cliente (target del flush)
+#
+# Network:
+#   `isolated`: bridge dedicato, niente egress esterno se il cliente è full
+#               on-premise (Bedrock raggiungibile via VPC endpoint o NAT
+#               aziendale, non via questa rete Docker).
+#               Per il caso anthropic_api standard la rete deve avere
+#               accesso a Internet (api.anthropic.com).
+
+version: "3.9"
+
+services:
+  wiki-toolkit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wiki-toolkit:latest
+    container_name: wiki-toolkit
+
+    environment:
+      # Provider standard — chiave passata dal file .env locale (mai in git).
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      # Provider Bedrock — usa la catena AWS standard. Si possono passare
+      # anche le single env (preferito: montare ~/.aws/ in read-only).
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID:-}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY:-}"
+      AWS_SESSION_TOKEN: "${AWS_SESSION_TOKEN:-}"
+      AWS_REGION: "${AWS_REGION:-eu-west-1}"
+      AWS_PROFILE: "${AWS_PROFILE:-}"
+      # Forza locale UTF-8 (importante per filename con accenti italiani).
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+
+    volumes:
+      # Config + auth cliente. NON usare bind mount per la rete: i token
+      # OAuth devono restare sul filesystem del cliente.
+      - ./bootstrap/clients:/app/bootstrap/clients
+      # Output runtime — questa cartella contiene dati del cliente, mai
+      # spostarla fuori dal perimetro.
+      - ./_status:/app/_status
+      # Drop zone del watcher (opzionale).
+      - ./_inbox:/app/_inbox
+      # Vault del cliente (target del flush dalla batch UI).
+      - ./vault:/app/vault
+      # AWS credentials read-only se si vuole condividere il profilo host
+      # (alternativa pulita a passare AWS_* env). Decommentare se serve.
+      # - ${HOME}/.aws:/home/wiki/.aws:ro
+
+    # Porta solo per la batch UI (Flask + HTMX, localhost only di default).
+    ports:
+      - "127.0.0.1:7423:7423"
+
+    networks:
+      - isolated
+
+    # Politiche di sicurezza minime: filesystem in sola lettura sui binari,
+    # /app/_status e /app/_inbox restano scrivibili via volume.
+    read_only: false
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    # Non riavviare in loop: il toolkit è batch-oriented, non un daemon.
+    restart: "no"
+
+networks:
+  isolated:
+    driver: bridge
+    # Per cliente fully air-gapped: aggiungere `internal: true` qui sotto
+    # — bloccherà l'egress verso Internet. Compatibile SOLO con provider
+    # `bedrock` raggiungibile via VPC endpoint dell'host.
+    # internal: true

@@ -151,6 +151,7 @@ def run_categorization(
                     batch_size=batch_size,
                     state_dir=state_dir,
                     client=client,
+                    config=config,
                 )
             except Exception as exc:  # pragma: no cover - fail-soft
                 logger.exception("Fallita chiamata Claude per %s: %s", jsonl.stem, exc)
