@@ -1,0 +1,20 @@
+# Dipendenze del package `bootstrap/` (wizard + config template).
+#
+# stdlib only:
+#   - logging, re, dataclasses, pathlib, collections.abc
+#
+# Third-party:
+#   - (nessuna diretta) — il wizard è puro Python.
+#     PyYAML è usato dal CLI per leggere il config generato, non dal wizard.
+#
+# File template:
+#   - bootstrap/config.template.yml  (rendering via render_config)
+#
+# Output:
+#   - bootstrap/clients/<slug>/config.yml  (gitignored)
+#   - _status/  (gitignored)
+#   - _inbox/<slug>/  (gitignored)
+#
+# Doc:
+#   - bootstrap/INSTALL.md  (Mac/Linux/WSL)
+#   - bootstrap/RUNBOOK.md  (Valentino, 3 atti)
