@@ -1,0 +1,121 @@
+{
+  "files": [
+    {
+      "id": "1aBcDe-FAKE-001",
+      "name": "Offerta_VerdiCostruzioni_2024-03-12.pdf",
+      "mimeType": "application/pdf",
+      "size": "184320",
+      "modifiedTime": "2024-03-12T10:23:00Z",
+      "parents": ["Drive condivisi/Commerciale/Offerte"],
+      "owners": [
+        {"emailAddress": "a.ferrari@officina-bianchi.it", "displayName": "Anna Ferrari"}
+      ],
+      "lastModifyingUser": {
+        "emailAddress": "a.ferrari@officina-bianchi.it"
+      },
+      "md5Checksum": "d41d8cd98f00b204e9800998ecf8427e",
+      "webViewLink": "https://drive.google.com/file/d/1aBcDe-FAKE-001/view",
+      "permissions": [{"type": "user", "role": "owner"}],
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-002",
+      "name": "Listino_2024_v3.xlsx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": "52488",
+      "modifiedTime": "2024-09-04T15:11:00Z",
+      "parents": ["Drive condivisi/Commerciale"],
+      "owners": [
+        {"emailAddress": "m.rossi@officina-bianchi.it", "displayName": "Mario Rossi"}
+      ],
+      "lastModifyingUser": {"emailAddress": "m.rossi@officina-bianchi.it"},
+      "md5Checksum": "9b74c9897bac770ffc029102a200c5de",
+      "webViewLink": "https://drive.google.com/file/d/1aBcDe-FAKE-002/view",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-003",
+      "name": "Disegno-tecnico_TelaioX_rev2.dwg",
+      "mimeType": "application/acad",
+      "size": "2350912",
+      "modifiedTime": "2024-06-22T08:45:00Z",
+      "parents": ["Drive condivisi/Produzione/CAD"],
+      "owners": [
+        {"emailAddress": "g.bianchi@officina-bianchi.it", "displayName": "Giulia Bianchi"}
+      ],
+      "lastModifyingUser": {"emailAddress": "g.bianchi@officina-bianchi.it"},
+      "md5Checksum": "5d41402abc4b2a76b9719d911017c592",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-004",
+      "name": "Verbale_riunione_commerciale_2024-09-12.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "size": "34211",
+      "modifiedTime": "2024-09-12T17:30:00Z",
+      "parents": ["Drive condivisi/Commerciale/Riunioni"],
+      "owners": [
+        {"emailAddress": "a.ferrari@officina-bianchi.it"}
+      ],
+      "lastModifyingUser": {"emailAddress": "a.ferrari@officina-bianchi.it"},
+      "md5Checksum": "e99a18c428cb38d5f260853678922e03",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-005",
+      "name": "Fattura_FT-2024-0742.pdf",
+      "mimeType": "application/pdf",
+      "size": "98304",
+      "modifiedTime": "2024-10-01T09:00:00Z",
+      "parents": ["Drive condivisi/Amministrazione/Fatture_emesse/2024"],
+      "owners": [
+        {"emailAddress": "amministrazione@officina-bianchi.it"}
+      ],
+      "lastModifyingUser": {"emailAddress": "amministrazione@officina-bianchi.it"},
+      "md5Checksum": "ab56b4d92b40713acc5af89985d4b786",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-006",
+      "name": "Procedura_taratura_macchina-CNC-3.pdf",
+      "mimeType": "application/pdf",
+      "size": "412888",
+      "modifiedTime": "2022-11-08T14:20:00Z",
+      "parents": ["Drive condivisi/Produzione/Procedure"],
+      "owners": [
+        {"emailAddress": "p.neri@officina-bianchi.it", "displayName": "Paolo Neri"}
+      ],
+      "lastModifyingUser": {"emailAddress": "p.neri@officina-bianchi.it"},
+      "md5Checksum": "1f3870be274f6c49b3e31a0c6728957f",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-007",
+      "name": "Capitolato_RossiSpA_FINAL.pdf",
+      "mimeType": "application/pdf",
+      "size": "1024000",
+      "modifiedTime": "2024-08-15T11:50:00Z",
+      "parents": ["Drive condivisi/Commerciale/Clienti/Rossi-SpA"],
+      "owners": [
+        {"emailAddress": "a.ferrari@officina-bianchi.it"}
+      ],
+      "lastModifyingUser": {"emailAddress": "a.ferrari@officina-bianchi.it"},
+      "md5Checksum": "098f6bcd4621d373cade4e832627b4f6",
+      "trashed": false
+    },
+    {
+      "id": "1aBcDe-FAKE-008",
+      "name": "Copia di Capitolato_RossiSpA_FINAL.pdf",
+      "mimeType": "application/pdf",
+      "size": "1024000",
+      "modifiedTime": "2024-08-15T12:10:00Z",
+      "parents": ["Drive condivisi/Commerciale/_old"],
+      "owners": [
+        {"emailAddress": "a.ferrari@officina-bianchi.it"}
+      ],
+      "lastModifyingUser": {"emailAddress": "a.ferrari@officina-bianchi.it"},
+      "md5Checksum": "098f6bcd4621d373cade4e832627b4f6",
+      "trashed": false
+    }
+  ]
+}

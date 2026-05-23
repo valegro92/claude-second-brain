@@ -1,0 +1,5 @@
+# Dipendenze runtime del cantiere reconcilers (sottoset di pyproject.toml).
+# Documento solo informativo: il package manager autorevole è uv su pyproject.toml.
+anthropic>=0.40.0
+rapidfuzz>=3.5.0
+pyyaml>=6.0
