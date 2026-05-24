@@ -45,10 +45,16 @@ _ARCHIVE_PATH_TOKENS: tuple[str, ...] = (
     "vecchio",
     "vecchi",
     "old/",
+    "_old",
+    "_old_",
     "/backup",
     "_backup",
+    "backup_2",  # Backup_2022/, Backup_2021/
     "storico",
     "obsoleto",
+    "non_usare",
+    "non usare",
+    "_da_eliminare",
 )
 
 # Token di path che gridano "roba viva, operativa".
@@ -60,6 +66,70 @@ _LIVE_PATH_TOKENS: tuple[str, ...] = (
     "/wip",
     "/vivi",
     "/commerciale",
+    # Pattern italiani PMI: cartelle operative ricorrenti
+    "/clienti/",
+    "/fornitori/",
+    "/offerte/",
+    "/ordini/",
+    "/fatture/",
+    "/ddt/",
+    "/comunicazioni/",
+    "/preventivi/",
+    "/commesse/",
+    "/progetti/",
+)
+
+# Token di path che indicano riferimenti permanenti (DA_CONSULTARE).
+_CONSULT_PATH_TOKENS: tuple[str, ...] = (
+    "/contratti/",
+    "/listini/",
+    "/manuali/",
+    "/modelli/",
+    "/templates/",
+    "/documenti/",
+    "/normativa/",
+    "/normative/",
+    "/policies/",
+    "/policy/",
+    "/procedure/",
+    "/riferimenti/",
+    "/references/",
+    "/anagrafica/",
+    "/anagrafiche/",
+)
+
+# Pattern naming italiano "documento di business" (forte segnale che NON e' rumore).
+# Combinato con eta' recente -> VIVO, eta' vecchia -> ARCHIVIO.
+_BUSINESS_NAME_TOKENS: tuple[str, ...] = (
+    "fattura",
+    "fatture",
+    "fattura_",
+    "ddt",
+    "ddt_",
+    "offerta",
+    "offerta_",
+    "preventivo",
+    "preventivo_",
+    "conferma_ordine",
+    "conferma-ordine",
+    "ordine_",
+    "contratto",
+    "contratto_",
+    "listino",
+    "listino_",
+    "manuale",
+    "manuale_",
+    "anagrafica",
+    "anagrafica_",
+    "contatti",
+    "scheda_cliente",
+    "scheda_fornitore",
+    "riepilogo",
+    "report",
+    "relazione",
+    "comunicazione",
+    "perizia",
+    "verbale",
 )
 
 
@@ -117,10 +187,23 @@ def score(record: FileRecord) -> dict[Categoria, float]:
     if any(tok in path_lower for tok in _ARCHIVE_PATH_TOKENS):
         _bump(scores, Categoria.ARCHIVIO, 0.7)
     if any(tok in path_lower for tok in _LIVE_PATH_TOKENS):
-        _bump(scores, Categoria.VIVO, 0.3)
+        _bump(scores, Categoria.VIVO, 0.4)
+    if any(tok in path_lower for tok in _CONSULT_PATH_TOKENS):
+        _bump(scores, Categoria.DA_CONSULTARE, 0.5)
     # Cestino vero e proprio: segnale fortissimo.
     if "/cestino" in path_lower or path_lower.startswith("cestino/") or "/trash" in path_lower:
         _bump(scores, Categoria.CESTINO, 0.9)
+
+    # --- segnale 5: naming business italiano + eta' ----------------------
+    # Documenti di business con nome riconoscibile rinforzano la categoria
+    # gia' suggerita dall'eta' (no override, solo bump per uscire dal DA_CHIARIRE).
+    if any(tok in name_lower for tok in _BUSINESS_NAME_TOKENS):
+        if age < 365:
+            _bump(scores, Categoria.VIVO, 0.3)
+        elif age < 1095:
+            _bump(scores, Categoria.DA_CONSULTARE, 0.3)
+        else:
+            _bump(scores, Categoria.ARCHIVIO, 0.3)
 
     # --- segnale 4: dimensione anomala -----------------------------------
     # File zero-byte: quasi sempre placeholder o residui.
