@@ -73,3 +73,32 @@ vault/Daily/*/
 *.pdf
 *.bak
 *.tmp
+
+# ═══════════════════════════════════════════════
+# Custodia v2 — runtime state e credenziali
+# ═══════════════════════════════════════════════
+
+# State store SQLite di ogni progetto cliente — MAI in git
+.custodia-state/
+
+# Workspace metadata + project list (utente-specifico)
+.custodia/
+
+# Token cache OAuth (Google Drive, Microsoft Graph, Fatture in Cloud)
+google_token.json
+microsoft_token.json
+fic_token.json
+*.oauth-token.json
+
+# Credentials desktop OAuth (devono essere fornite dal consulente, non committed)
+custodia-credentials.json
+*credentials.json
+
+# Cache raw bytes dei connettori (Drive/Outlook export download)
+cache/
+
+# Output transitori demo onboarding (rigenerati da record_demo.py)
+docs/onboarding-screenshots/frames/
+
+# Streamlit secrets/cache
+.streamlit/secrets.toml
