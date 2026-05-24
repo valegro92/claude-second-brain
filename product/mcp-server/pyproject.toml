@@ -1,0 +1,19 @@
+[project]
+name = "custodia-mcp"
+version = "0.1.0"
+description = "MCP server che espone un vault Obsidian agent-ready"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.2.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+custodia-mcp = "custodia_mcp:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["custodia_mcp"]
