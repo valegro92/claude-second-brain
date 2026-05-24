@@ -603,6 +603,148 @@ def dashboard(client: str | None, open_browser: bool) -> None:
         webbrowser.open(paths["html"].resolve().as_uri())
 
 
+# --- wiki doctor ----------------------------------------------------------
+
+
+@main.command()
+@click.option("--client", default=None, help="Slug cliente (opzionale per check globali).")
+@click.option("--strict", is_flag=True, help="Exit code 1 anche su warning (oltre fail).")
+def doctor(client: str | None, strict: bool) -> None:
+    """Health-check: Python, tool di sistema, env, config, cartelle, disco."""
+    from wiki.doctor import format_report, run_all_checks, summary_exit_code
+
+    # client e' opzionale qui: se passato, valida anche il suo config
+    slug = client
+    if slug:
+        try:
+            slug = _resolve_client(slug)
+        except click.ClickException:
+            click.echo(f"Cliente '{client}' non valido o inesistente.")
+            slug = None
+
+    checks = run_all_checks(REPO_ROOT, slug=slug)
+    click.echo(format_report(checks))
+    click.echo("")
+    n_ok = sum(1 for c in checks if c.stato == "ok")
+    n_warn = sum(1 for c in checks if c.stato == "warn")
+    n_fail = sum(1 for c in checks if c.stato == "fail")
+    click.echo(f"Totale: {n_ok} ok, {n_warn} warning, {n_fail} fail.")
+    exit_code = summary_exit_code(checks, strict=strict)
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+
+# --- wiki demo ------------------------------------------------------------
+
+
+@main.command()
+@click.option(
+    "--reset",
+    is_flag=True,
+    help="Cancella eventuale demo esistente prima di rigenerare.",
+)
+def demo(reset: bool) -> None:
+    """Demo end-to-end: genera dataset finto, lancia pipeline, apre dashboard.
+
+    Crea un cliente "demo" con 48 file misti (3 clienti finti + 2 fornitori),
+    esegue scan + extract + categorize + reconcile, genera la dashboard.
+    Utile per training, screen-recording, valutazione del prodotto.
+    """
+    slug = "demo"
+    client_dir = CLIENTS_DIR / slug
+    state_dir = _state_dir_for(slug)
+    inbox_dir = _inbox_dir_for(slug)
+
+    if reset:
+        for d in (client_dir, state_dir, inbox_dir):
+            if d.exists():
+                shutil.rmtree(d)
+        click.echo("Demo esistente cancellata.")
+
+    if client_dir.exists() and (client_dir / "config.yml").exists():
+        if not click.confirm(
+            "Demo gia' configurata. Sovrascrivere config e rigenerare dataset?", default=False
+        ):
+            click.echo("Annullato. Usa --reset per ricominciare da zero.")
+            return
+
+    # 1) Config demo (no API key necessaria — Claude e' mockabile, ma demo gira solo rules)
+    client_dir.mkdir(parents=True, exist_ok=True)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    inbox_dir.mkdir(parents=True, exist_ok=True)
+    demo_config = f"""\
+cliente:
+  slug: {slug}
+  nome: "Demo end-to-end"
+  custode: VG
+  owner: VG
+sorgenti:
+  nas:
+    enabled: true
+    mount: "{inbox_dir}"
+    perimetro: {{ include: [], exclude: [] }}
+  gdrive: {{ enabled: false }}
+  m365: {{ enabled: false }}
+  email: {{ enabled: false }}
+  server: {{ enabled: false }}
+filtri_globali:
+  max_file_mb: 50
+  exclude_extensions: [".dwg"]
+  exclude_paths_glob: []
+privacy:
+  modalita: safe
+  log_dati_a_anthropic: false
+batch:
+  size: 50
+  cost_alert_eur: 50
+  cost_hard_stop_eur: 200
+llm:
+  provider: anthropic_api
+  redact_pii: false
+dashboard:
+  auto: true
+"""
+    (client_dir / "config.yml").write_text(demo_config, encoding="utf-8")
+    click.echo(f"Config demo scritto: {(client_dir / 'config.yml').relative_to(REPO_ROOT)}")
+
+    # 2) Genera dataset
+    click.echo("Genero dataset finto (48 file)...")
+    try:
+        from tests.fixtures.build_pilot_dataset import build_pilot_dataset
+
+        build_pilot_dataset(inbox_dir)
+    except ImportError as exc:
+        click.echo(f"Errore: impossibile importare build_pilot_dataset ({exc})")
+        click.echo("Assicurati di aver installato dev deps: `uv sync --extra dev`")
+        sys.exit(2)
+
+    # 3) Pipeline completo invocando i comandi click programmaticamente
+    click.echo("")
+    click.echo("Pipeline:")
+    from click.testing import CliRunner
+
+    runner = CliRunner()
+    for cmd_name in ("scan", "extract", "categorize", "reconcile"):
+        click.echo(f"  > wiki {cmd_name} --client {slug}")
+        result = runner.invoke(main, [cmd_name, "--client", slug], catch_exceptions=False)
+        if result.exit_code != 0:
+            click.echo(f"    [!] {cmd_name} ha exit {result.exit_code}: {result.output[:200]}")
+            break
+
+    # 4) Dashboard
+    click.echo("")
+    click.echo("Genero dashboard...")
+    runner.invoke(main, ["dashboard", "--client", slug], catch_exceptions=False)
+    dash_path = state_dir / "dashboard.html"
+    if dash_path.exists():
+        click.echo(f"Dashboard: {dash_path.relative_to(REPO_ROOT)}")
+        click.echo("")
+        click.echo("Demo completa.")
+        click.echo("Per un cliente reale: `wiki init`")
+    else:
+        click.echo("Dashboard non generata (verifica errori sopra).")
+
+
 # --- entry point ----------------------------------------------------------
 
 
