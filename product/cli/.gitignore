@@ -1,0 +1,7 @@
+.custodia-state/
+__pycache__/
+*.egg-info/
+.venv/
+*.pyc
+.pytest_cache/
+.coverage

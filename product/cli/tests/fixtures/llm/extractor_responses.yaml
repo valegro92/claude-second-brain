@@ -1,0 +1,635 @@
+# Canned responses per il FakeLLMProvider — coprono l'intera pipeline
+# `custodia build {clients,fornitori,commesse,communications}` sul corpus
+# `tests/fixtures/finto-drive/` (5 documenti reali).
+#
+# Generato programmaticamente (vedi storia git). Ancorato a:
+#   - `custodia_cli.extractor.prompts.{categorize,extract}_system_prompt`
+#   - source_path prodotti dal connettore filesystem sul finto-drive
+#
+# Schema di matching (vedi `custodia_cli/llm/fakes.py`):
+#   key = system + "\n" + last_user_content
+# Per ogni entry, `match_prefix` è prefisso di key. Il primo match vince
+# (ordine di file).
+#
+# Layout:
+#   - 20 entry "categorize": (4 entity_type) × (5 source_path)
+#   - 4 entry "extract": una per (entity_type, entity_name) dedotta dal corpus
+#
+# Documenti coperti:
+#   - README.md (nessuna entity)
+#   - Commerciale 2024/fattura-rossetto-001.pdf → cliente Rossetto Laminazioni
+#   - Commerciale 2024/offerta-bianchi-valvole.docx → cliente Bianchi Impianti
+#   - Commerciale 2024/listino-2024.xlsx (nessuna entity)
+#   - Comunicazioni/email-torrelli-2024-03.txt → fornitore Torrelli + comunicazione
+
+
+responses:
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `README.md`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/fattura-rossetto-001.pdf`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Rossetto Laminazioni SRL
+      hint: fattura 001/2024
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/offerta-bianchi-valvole.docx`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Bianchi Impianti SpA
+      hint: offerta OFF-2024-014
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/listino-2024.xlsx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Comunicazioni/email-torrelli-2024-03.txt`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di fornitori (entità di tipo `fornitore`), e in caso affermativo elencare i nomi delle fornitori menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna fornitore compare nel testo.
+
+    - NON inventare fornitori non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la fornitore (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `README.md`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di fornitori (entità di tipo `fornitore`), e in caso affermativo elencare i nomi delle fornitori menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna fornitore compare nel testo.
+
+    - NON inventare fornitori non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la fornitore (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/fattura-rossetto-001.pdf`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di fornitori (entità di tipo `fornitore`), e in caso affermativo elencare i nomi delle fornitori menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna fornitore compare nel testo.
+
+    - NON inventare fornitori non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la fornitore (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/offerta-bianchi-valvole.docx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di fornitori (entità di tipo `fornitore`), e in caso affermativo elencare i nomi delle fornitori menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna fornitore compare nel testo.
+
+    - NON inventare fornitori non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la fornitore (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/listino-2024.xlsx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di fornitori (entità di tipo `fornitore`), e in caso affermativo elencare i nomi delle fornitori menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna fornitore compare nel testo.
+
+    - NON inventare fornitori non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la fornitore (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Comunicazioni/email-torrelli-2024-03.txt`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Torrelli Meccanica S.r.l.
+      hint: email conferma ordine 15 marzo 2024
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di commesse (entità di tipo `commessa`), e in caso affermativo elencare i nomi delle commesse menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna commessa compare nel testo.
+
+    - NON inventare commesse non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la commessa (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `README.md`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di commesse (entità di tipo `commessa`), e in caso affermativo elencare i nomi delle commesse menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna commessa compare nel testo.
+
+    - NON inventare commesse non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la commessa (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/fattura-rossetto-001.pdf`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di commesse (entità di tipo `commessa`), e in caso affermativo elencare i nomi delle commesse menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna commessa compare nel testo.
+
+    - NON inventare commesse non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la commessa (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/offerta-bianchi-valvole.docx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di commesse (entità di tipo `commessa`), e in caso affermativo elencare i nomi delle commesse menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna commessa compare nel testo.
+
+    - NON inventare commesse non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la commessa (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/listino-2024.xlsx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di commesse (entità di tipo `commessa`), e in caso affermativo elencare i nomi delle commesse menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna commessa compare nel testo.
+
+    - NON inventare commesse non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la commessa (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Comunicazioni/email-torrelli-2024-03.txt`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di comunicazioni (entità di tipo `comunicazione`), e in caso affermativo elencare i nomi delle comunicazioni menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna comunicazione compare nel testo.
+
+    - NON inventare comunicazioni non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la comunicazione (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `README.md`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di comunicazioni (entità di tipo `comunicazione`), e in caso affermativo elencare i nomi delle comunicazioni menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna comunicazione compare nel testo.
+
+    - NON inventare comunicazioni non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la comunicazione (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/fattura-rossetto-001.pdf`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di comunicazioni (entità di tipo `comunicazione`), e in caso affermativo elencare i nomi delle comunicazioni menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna comunicazione compare nel testo.
+
+    - NON inventare comunicazioni non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la comunicazione (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/offerta-bianchi-valvole.docx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di comunicazioni (entità di tipo `comunicazione`), e in caso affermativo elencare i nomi delle comunicazioni menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna comunicazione compare nel testo.
+
+    - NON inventare comunicazioni non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la comunicazione (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Commerciale 2024/listino-2024.xlsx`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di comunicazioni (entità di tipo `comunicazione`), e in caso affermativo elencare i nomi delle comunicazioni menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna comunicazione compare nel testo.
+
+    - NON inventare comunicazioni non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la comunicazione (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `Comunicazioni/email-torrelli-2024-03.txt`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Conferma ordine pompe idrauliche
+      hint: oggetto email 15 marzo 2024
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: "Sei un assistente specializzato in estrazione strutturata da documenti aziendali italiani. Ti viene chiesto di estrarre una scheda `cliente` conforme allo schema canonical.\n\nRegole stringenti:\n- Compila solo i campi desumibili dai documenti forniti.\n- Campi non desumibili: lascia `null` per scalari, lista vuota per array.\n- Date: formato ISO 8601 (`YYYY-MM-DD`).\n- Importi: numero, senza simbolo valuta né separatore migliaia.\n- Sii fedele al documento: NON inventare valori (PIVA, fatturati, sedi).\n- `note_relazionali` e `body`/`note`: lascia stringa vuota o `null` — li compila il consulente in review.\n- `red_flag`: lascia array vuoto — è output del consulente.\n- `tipo`: deve essere esattamente la stringa `cliente`.\n\nEsempio completo (riferimento di stile e completezza):\n```json\n{\n  \"tipo\": \"cliente\",\n  \"nome\": \"Rossetto Laminazioni SRL\",\n  \"piva\": \"03421560289\",\n  \"settore\": \"metalmeccanica\",\n  \"sede\": \"Vicenza\",\n  \"referente_principale\": \"Marco Rossetto\",\n  \"ruolo_referente\": \"titolare\",\n  \"email_referente\": \"m.rossetto@rossettolam.it\",\n  \"telefono\": \"+39 0444 123456\",\n  \"relazione_dal\": \"2018-03\",\n  \"stato_relazione\": \"attivo-fedele\",\n  \"ultimo_contatto\": \"2026-05-18\",\n  \"prossima_azione\": \"chiamare per offerta compressore X-450\",\n  \"condizioni_commerciali\": {\n    \"sconto_listino\": \"12%\",\n    \"termini_pagamento\": \"60gg DF FM\",\n    \"trasporto\": \"franco destino\",\n    \"resi\": \"accettati entro 30gg con nota di credito\"\n  },\n  \"eccezioni_concordate\": [\n    {\n      \"data\": \"2023-09-15\",\n      \"contesto\": \"ordine urgente 200 lamiere inox\",\n      \"eccezione\": \"spedizione espressa a carico nostro per ritardo nostro fornitore\",\n      \"documento\": \"[[offerte/2023-09-rossetto-urgente]]\"\n    },\n    {\n      \"data\": \"2024-11-02\",\n      \"contesto\": \"rinnovo contratto annuale\",\n      \"eccezione\": \"prezzo bloccato fino al 2025-06-30 nonostante aumento listino del 4%\",\n      \"documento\": \"[[contratti/2024-rossetto-quadro]]\"\n    }\n  ],\n  \"prodotti_ricorrenti\": [\n    \"lamiere acciaio inox AISI 304 sp. 1-3mm\",\n    \"profilati alluminio serie 6000\",\n    \"bulloneria classe 8.8 zincata\"\n  ],\n  \"fatturato_2024\": 187000,\n  \"fatturato_2025_ytd\": 142000,\n  \"note_relazionali\": \"Marco è titolare di seconda generazione (padre fondatore). Tono asciutto,\\napprezza precisione e zero fronzoli. Non vuole essere chiamato per cortesia,\\nsolo se c'è qualcosa di concreto. Ha un rapporto stretto con Luca (nostro\\ncommerciale di zona Veneto). Sensibile sui tempi di consegna più che sul\\nprezzo: meglio pagare un 3% in più ma avere certezza sulla data.\\n\",\n  \"red_flag\": [\n    \"mai inviare offerte generiche da template, le riconosce e si offende\",\n    \"non promettere consegne sotto 5gg senza verifica reale con produzione\"\n  ]\n}\n```\n\nDevi chiamare il tool `emit_structured_output` con i campi richiesti, uno per uno; nessun campo deve essere allucinato.\nEntità da estrarre: **Rossetto Laminazioni SRL**"
+  operation: extract_structured
+  response:
+    tipo: cliente
+    nome: Rossetto Laminazioni SRL
+    piva: 03421560289
+    settore: metalmeccanica
+    sede: Vicenza
+    referente_principale: null
+    ruolo_referente: null
+    email_referente: null
+    telefono: null
+    relazione_dal: null
+    stato_relazione: null
+    ultimo_contatto: '2024-02-12'
+    prossima_azione: null
+    condizioni_commerciali: {}
+    eccezioni_concordate: []
+    prodotti_ricorrenti:
+    - lamiere zincate 1.2mm
+    fatturato_2024: null
+    fatturato_2025_ytd: null
+    note_relazionali: ''
+    red_flag: []
+  tokens_in: 800
+  tokens_out: 200
+- match_prefix: "Sei un assistente specializzato in estrazione strutturata da documenti aziendali italiani. Ti viene chiesto di estrarre una scheda `cliente` conforme allo schema canonical.\n\nRegole stringenti:\n- Compila solo i campi desumibili dai documenti forniti.\n- Campi non desumibili: lascia `null` per scalari, lista vuota per array.\n- Date: formato ISO 8601 (`YYYY-MM-DD`).\n- Importi: numero, senza simbolo valuta né separatore migliaia.\n- Sii fedele al documento: NON inventare valori (PIVA, fatturati, sedi).\n- `note_relazionali` e `body`/`note`: lascia stringa vuota o `null` — li compila il consulente in review.\n- `red_flag`: lascia array vuoto — è output del consulente.\n- `tipo`: deve essere esattamente la stringa `cliente`.\n\nEsempio completo (riferimento di stile e completezza):\n```json\n{\n  \"tipo\": \"cliente\",\n  \"nome\": \"Rossetto Laminazioni SRL\",\n  \"piva\": \"03421560289\",\n  \"settore\": \"metalmeccanica\",\n  \"sede\": \"Vicenza\",\n  \"referente_principale\": \"Marco Rossetto\",\n  \"ruolo_referente\": \"titolare\",\n  \"email_referente\": \"m.rossetto@rossettolam.it\",\n  \"telefono\": \"+39 0444 123456\",\n  \"relazione_dal\": \"2018-03\",\n  \"stato_relazione\": \"attivo-fedele\",\n  \"ultimo_contatto\": \"2026-05-18\",\n  \"prossima_azione\": \"chiamare per offerta compressore X-450\",\n  \"condizioni_commerciali\": {\n    \"sconto_listino\": \"12%\",\n    \"termini_pagamento\": \"60gg DF FM\",\n    \"trasporto\": \"franco destino\",\n    \"resi\": \"accettati entro 30gg con nota di credito\"\n  },\n  \"eccezioni_concordate\": [\n    {\n      \"data\": \"2023-09-15\",\n      \"contesto\": \"ordine urgente 200 lamiere inox\",\n      \"eccezione\": \"spedizione espressa a carico nostro per ritardo nostro fornitore\",\n      \"documento\": \"[[offerte/2023-09-rossetto-urgente]]\"\n    },\n    {\n      \"data\": \"2024-11-02\",\n      \"contesto\": \"rinnovo contratto annuale\",\n      \"eccezione\": \"prezzo bloccato fino al 2025-06-30 nonostante aumento listino del 4%\",\n      \"documento\": \"[[contratti/2024-rossetto-quadro]]\"\n    }\n  ],\n  \"prodotti_ricorrenti\": [\n    \"lamiere acciaio inox AISI 304 sp. 1-3mm\",\n    \"profilati alluminio serie 6000\",\n    \"bulloneria classe 8.8 zincata\"\n  ],\n  \"fatturato_2024\": 187000,\n  \"fatturato_2025_ytd\": 142000,\n  \"note_relazionali\": \"Marco è titolare di seconda generazione (padre fondatore). Tono asciutto,\\napprezza precisione e zero fronzoli. Non vuole essere chiamato per cortesia,\\nsolo se c'è qualcosa di concreto. Ha un rapporto stretto con Luca (nostro\\ncommerciale di zona Veneto). Sensibile sui tempi di consegna più che sul\\nprezzo: meglio pagare un 3% in più ma avere certezza sulla data.\\n\",\n  \"red_flag\": [\n    \"mai inviare offerte generiche da template, le riconosce e si offende\",\n    \"non promettere consegne sotto 5gg senza verifica reale con produzione\"\n  ]\n}\n```\n\nDevi chiamare il tool `emit_structured_output` con i campi richiesti, uno per uno; nessun campo deve essere allucinato.\nEntità da estrarre: **Bianchi Impianti SpA**"
+  operation: extract_structured
+  response:
+    tipo: cliente
+    nome: Bianchi Impianti SpA
+    piva: null
+    settore: impiantistica
+    sede: null
+    referente_principale: null
+    ruolo_referente: null
+    email_referente: null
+    telefono: null
+    relazione_dal: null
+    stato_relazione: null
+    ultimo_contatto: '2024-03-08'
+    prossima_azione: follow-up offerta OFF-2024-014 (valvole DN50 PN16)
+    condizioni_commerciali:
+      consegna: 30 gg
+    eccezioni_concordate: []
+    prodotti_ricorrenti:
+    - valvole DN50 PN16
+    fatturato_2024: null
+    fatturato_2025_ytd: null
+    note_relazionali: ''
+    red_flag: []
+  tokens_in: 800
+  tokens_out: 200
+- match_prefix: "Sei un assistente specializzato in estrazione strutturata da documenti aziendali italiani. Ti viene chiesto di estrarre una scheda `fornitore` conforme allo schema canonical.\n\nRegole stringenti:\n- Compila solo i campi desumibili dai documenti forniti.\n- Campi non desumibili: lascia `null` per scalari, lista vuota per array.\n- Date: formato ISO 8601 (`YYYY-MM-DD`).\n- Importi: numero, senza simbolo valuta né separatore migliaia.\n- Sii fedele al documento: NON inventare valori (PIVA, fatturati, sedi).\n- `note_relazionali` e `body`/`note`: lascia stringa vuota o `null` — li compila il consulente in review.\n- `red_flag`: lascia array vuoto — è output del consulente.\n- `tipo`: deve essere esattamente la stringa `fornitore`.\n\nEsempio completo (riferimento di stile e completezza):\n```json\n{\n  \"tipo\": \"fornitore\",\n  \"nome\": \"Esempio Fornitore SRL\",\n  \"piva\": 0,\n  \"settore\": \"metalli e leghe\",\n  \"referente_principale\": \"Mario Esempio\",\n  \"ruolo_referente\": \"commerciale\",\n  \"email_referente\": \"mario@esempio-fornitore.it\",\n  \"telefono\": \"+39 000 000000\",\n  \"relazione_dal\": \"2020-01\",\n  \"stato_relazione\": \"attivo\",\n  \"ultimo_ordine\": \"2026-04-15\",\n  \"prodotti_forniti\": [\n    \"lamiere acciaio inox\",\n    \"profilati alluminio\"\n  ],\n  \"condizioni_commerciali\": {\n    \"sconto_listino\": \"5%\",\n    \"termini_pagamento\": \"60gg DF\",\n    \"trasporto\": \"franco partenza\",\n    \"resi\": \"solo entro 15gg con DDT\"\n  },\n  \"affidabilita\": \"alta\",\n  \"note_relazionali\": \"Template canonical per scheda fornitore. Campi obbligatori: tipo, nome.\\nTutti gli altri sono opzionali ma desiderabili. Il consulente compila in\\nreview le note_relazionali e i red_flag dopo l'estrazione LLM.\\n\",\n  \"red_flag\": []\n}\n```\n\nDevi chiamare il tool `emit_structured_output` con i campi richiesti, uno per uno; nessun campo deve essere allucinato.\nEntità da estrarre: **Torrelli Meccanica S.r.l.**"
+  operation: extract_structured
+  response:
+    tipo: fornitore
+    nome: Torrelli Meccanica S.r.l.
+    piva: null
+    settore: meccanica
+    referente_principale: Giuseppe Torrelli
+    ruolo_referente: null
+    email_referente: g.torrelli@torrelli-meccanica.it
+    telefono: null
+    relazione_dal: null
+    stato_relazione: null
+    ultimo_ordine: '2024-03-15'
+    prodotti_forniti:
+    - pompe idrauliche HP-450
+    condizioni_commerciali: {}
+    affidabilita: null
+    note_relazionali: 'P.IVA dichiarata in email: 02145670672.'
+    red_flag: []
+  tokens_in: 800
+  tokens_out: 200
+- match_prefix: "Sei un assistente specializzato in estrazione strutturata da documenti aziendali italiani. Ti viene chiesto di estrarre una scheda `comunicazione` conforme allo schema canonical.\n\nRegole stringenti:\n- Compila solo i campi desumibili dai documenti forniti.\n- Campi non desumibili: lascia `null` per scalari, lista vuota per array.\n- Date: formato ISO 8601 (`YYYY-MM-DD`).\n- Importi: numero, senza simbolo valuta né separatore migliaia.\n- Sii fedele al documento: NON inventare valori (PIVA, fatturati, sedi).\n- `note_relazionali` e `body`/`note`: lascia stringa vuota o `null` — li compila il consulente in review.\n- `red_flag`: lascia array vuoto — è output del consulente.\n- `tipo`: deve essere esattamente la stringa `comunicazione`.\n\nEsempio completo (riferimento di stile e completezza):\n```json\n{\n  \"tipo\": \"email-ricevuta\",\n  \"da\": \"a.bianchi@bianchiimpianti.com\",\n  \"a\": \"commerciale@nostraazienda.it\",\n  \"data\": \"2026-05-21 09:42\",\n  \"oggetto\": \"Richiesta sconto su ordine valvole DN80\",\n  \"cliente_collegato\": \"[[clienti/bianchi-impianti]]\",\n  \"stato\": \"da-rispondere\",\n  \"priorita\": \"alta\"\n}\n```\n\nDevi chiamare il tool `emit_structured_output` con i campi richiesti, uno per uno; nessun campo deve essere allucinato.\nEntità da estrarre: **Conferma ordine pompe idrauliche**"
+  operation: extract_structured
+  response:
+    tipo: comunicazione
+    da: g.torrelli@torrelli-meccanica.it
+    a: valentino@example.com
+    data: '2024-03-15'
+    oggetto: Conferma ordine pompe idrauliche
+    cliente_collegato: null
+    stato: ricevuta
+    priorita: media
+  tokens_in: 800
+  tokens_out: 200
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `/finto/fattura-rossetto-001.pdf`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Rossetto Laminazioni SRL
+      hint: fattura 001/2024
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `/finto/contratto-rossetto-2024.pdf`'
+  operation: extract_structured
+  response:
+    entities:
+    - name: Rossetto Laminazioni SRL
+      hint: contratto quadro 2024
+  tokens_in: 80
+  tokens_out: 20
+- match_prefix: 'Sei un assistente specializzato in analisi documentale per PMI italiane. Riceverai il testo estratto da un singolo documento aziendale (può essere una fattura, un''offerta, un contratto, un''email, un foglio Excel). Il tuo compito è identificare se il documento parla di clienti (entità di tipo `cliente`), e in caso affermativo elencare i nomi delle clienti menzionati.
+
+
+    Regole:
+
+    - Restituisci JSON con shape `{"entities": [{"name": "...", "hint": "..."}]}`.
+
+    - Lista vuota se nessuna cliente compare nel testo.
+
+    - NON inventare clienti non presenti nel documento.
+
+    - `hint` è un riferimento breve al contesto in cui appare la cliente (es. "fattura del 2024-03", "oggetto email").
+
+    - Per `comunicazione`: identifica le email/comunicazioni dirette presenti nel documento, non i partecipanti.
+
+    Documento sorgente: `/finto/manuale-tecnico.pdf`'
+  operation: extract_structured
+  response:
+    entities: []
+  tokens_in: 80
+  tokens_out: 8
+- match_prefix: "Sei un assistente specializzato in estrazione strutturata da documenti aziendali italiani. Ti viene chiesto di estrarre una scheda `cliente` conforme allo schema canonical.\n\nRegole stringenti:\n- Compila solo i campi desumibili dai documenti forniti.\n- Campi non desumibili: lascia `null` per scalari, lista vuota per array.\n- Date: formato ISO 8601 (`YYYY-MM-DD`).\n- Importi: numero, senza simbolo valuta né separatore migliaia.\n- Sii fedele al documento: NON inventare valori (PIVA, fatturati, sedi).\n- `note_relazionali` e `body`/`note`: lascia stringa vuota o `null` — li compila il consulente in review.\n- `red_flag`: lascia array vuoto — è output del consulente.\n- `tipo`: deve essere esattamente la stringa `cliente`.\n\nEsempio completo (riferimento di stile e completezza):\n```json\n{\n  \"tipo\": \"cliente\",\n  \"nome\": \"Rossetto Laminazioni SRL\",\n  \"piva\": \"03421560289\",\n  \"settore\": \"metalmeccanica\",\n  \"sede\": \"Vicenza\",\n  \"referente_principale\": \"Marco Rossetto\",\n  \"ruolo_referente\": \"titolare\",\n  \"email_referente\": \"m.rossetto@rossettolam.it\",\n  \"telefono\": \"+39 0444 123456\",\n  \"relazione_dal\": \"2018-03\",\n  \"stato_relazione\": \"attivo-fedele\",\n  \"ultimo_contatto\": \"2026-05-18\",\n  \"prossima_azione\": \"chiamare per offerta compressore X-450\",\n  \"condizioni_commerciali\": {\n    \"sconto_listino\": \"12%\",\n    \"termini_pagamento\": \"60gg DF FM\",\n    \"trasporto\": \"franco destino\",\n    \"resi\": \"accettati entro 30gg con nota di credito\"\n  },\n  \"eccezioni_concordate\": [\n    {\n      \"data\": \"2023-09-15\",\n      \"contesto\": \"ordine urgente 200 lamiere inox\",\n      \"eccezione\": \"spedizione espressa a carico nostro per ritardo nostro fornitore\",\n      \"documento\": \"[[offerte/2023-09-rossetto-urgente]]\"\n    },\n    {\n      \"data\": \"2024-11-02\",\n      \"contesto\": \"rinnovo contratto annuale\",\n      \"eccezione\": \"prezzo bloccato fino al 2025-06-30 nonostante aumento listino del 4%\",\n      \"documento\": \"[[contratti/2024-rossetto-quadro]]\"\n    }\n  ],\n  \"prodotti_ricorrenti\": [\n    \"lamiere acciaio inox AISI 304 sp. 1-3mm\",\n    \"profilati alluminio serie 6000\",\n    \"bulloneria classe 8.8 zincata\"\n  ],\n  \"fatturato_2024\": 187000,\n  \"fatturato_2025_ytd\": 142000,\n  \"note_relazionali\": \"Marco è titolare di seconda generazione (padre fondatore). Tono asciutto,\\napprezza precisione e zero fronzoli. Non vuole essere chiamato per cortesia,\\nsolo se c'è qualcosa di concreto. Ha un rapporto stretto con Luca (nostro\\ncommerciale di zona Veneto). Sensibile sui tempi di consegna più che sul\\nprezzo: meglio pagare un 3% in più ma avere certezza sulla data.\\n\",\n  \"red_flag\": [\n    \"mai inviare offerte generiche da template, le riconosce e si offende\",\n    \"non promettere consegne sotto 5gg senza verifica reale con produzione\"\n  ]\n}\n```\n\nDevi chiamare il tool `emit_structured_output` con i campi richiesti, uno per uno; nessun campo deve essere allucinato.\nEntità da estrarre: **Rossetto Laminazioni SRL**"
+  operation: extract_structured
+  response:
+    tipo: cliente
+    nome: Rossetto Laminazioni SRL
+    piva: 03421560289
+    settore: metalmeccanica
+    sede: Vicenza
+    referente_principale: Marco Rossetto
+    ruolo_referente: titolare
+    email_referente: m.rossetto@rossettolam.it
+    telefono: null
+    relazione_dal: null
+    stato_relazione: attivo-fedele
+    ultimo_contatto: null
+    prossima_azione: null
+    condizioni_commerciali: {}
+    eccezioni_concordate: []
+    prodotti_ricorrenti:
+    - lamiere zincate
+    fatturato_2024: null
+    fatturato_2025_ytd: null
+    note_relazionali: ''
+    red_flag: []
+  tokens_in: 800
+  tokens_out: 200
