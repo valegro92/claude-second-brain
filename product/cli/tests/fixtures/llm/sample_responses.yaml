@@ -1,0 +1,38 @@
+# Fixture per FakeLLMProvider - canned responses per test deterministici.
+#
+# Schema:
+#   match_prefix: stringa prefix usata per matchare (system + "\n" + last_message.content)
+#   operation: "complete" oppure "extract_structured"
+#   response: stringa (per complete) oppure dict (per extract_structured)
+#   tokens_in / tokens_out: opzionali, default 0
+responses:
+  - match_prefix: "Sei un classificatore PMI italiane."
+    operation: "complete"
+    response: "Categoria: cliente_attivo"
+    tokens_in: 120
+    tokens_out: 8
+
+  - match_prefix: "Estrai i dati cliente"
+    operation: "extract_structured"
+    response:
+      nome: "Rossetto Laminazioni SRL"
+      partita_iva: "01234567890"
+      settore: "metallurgia"
+      stato: "attivo"
+    tokens_in: 450
+    tokens_out: 60
+
+  - match_prefix: "Genera un riassunto."
+    operation: "complete"
+    response: "Riassunto sintetico del documento fornito."
+    tokens_in: 200
+    tokens_out: 30
+
+  - match_prefix: "Estrai commessa"
+    operation: "extract_structured"
+    response:
+      codice: "C-2024-042"
+      cliente: "Rossetto Laminazioni SRL"
+      importo_eur: 18500.00
+    tokens_in: 300
+    tokens_out: 40
