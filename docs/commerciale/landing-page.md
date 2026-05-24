@@ -1,10 +1,10 @@
-# Landing page — Catasto
+# Landing page — Custodia
 
 > Pagina singola da convertire facilmente in HTML / Astro / Hugo / 11ty.
 > Ogni `## SEZIONE — slug` corrisponde a un blocco/sezione della pagina renderizzata.
 > Le note tra `<!-- ... -->` sono indicazioni per il designer/developer, non vanno renderizzate.
 
-> Nota: "Catasto" è il nome di lavoro. Validazione marchio + dominio in corso (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)). Prima del go-live: verificare disponibilità di `catasto.it`, `ilcatasto.it`, `catastoaziendale.it` come dominio primario.
+> Nota: "Custodia" è il nome di lavoro. Validazione marchio + dominio in corso (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)). Prima del go-live: verificare disponibilità di `catasto.it`, `ilcatasto.it`, `catastoaziendale.it` come dominio primario.
 
 ---
 
@@ -12,9 +12,9 @@
 
 <!-- Layout: titolo XXL serif, tagline corta sotto, CTA primaria evidente. Sfondo: tinta chiara o foto di archivio fisico (schedari, cartelle ordinate). Logo placeholder in alto a sinistra. -->
 
-**[LOGO CATASTO]** *(placeholder — wordmark serif italiano, es. famiglia Tiempos / Domaine / Recoleta)*
+**[LOGO CUSTODIA]** *(placeholder — wordmark serif italiano, es. famiglia Tiempos / Domaine / Recoleta)*
 
-# Catasto
+# Custodia
 
 ## Il sapere della tua azienda, in ordine.
 
@@ -23,7 +23,7 @@ costruita partendo dai file che hai già.
 
 **[Prenota una scoperta gratuita di 30 minuti →](#contatti)**
 
-<!-- CTA secondaria: link "Cosa è Catasto" che scrolla a sezione successiva -->
+<!-- CTA secondaria: link "Cosa è Custodia" che scrolla a sezione successiva -->
 
 *Niente abbonamento. Niente piattaforma nuova da imparare.
 Una struttura di file che resta tua, mantenuta da una persona della tua azienda.*
@@ -32,11 +32,11 @@ Una struttura di file che resta tua, mantenuta da una persona della tua azienda.
 
 ## COS'È — sezione narrativa breve
 
-### Cos'è Catasto
+### Cos'è Custodia
 
 Le PMI italiane perdono ore ogni settimana cercando file, riunioni, decisioni vecchie. Drive condivisi diventati cimiteri di "Definitivo_v2_FINAL", conoscenza che vive nella testa di 3 persone, casella `info@` come archivio di metà dei contratti vivi. Quando entra un nuovo collega, 4-6 settimane di "chiedere in giro" prima di essere operativo.
 
-Catasto è un **servizio di consulenza chiavi-in-mano**, non un software. In 3-4 settimane installiamo nella tua azienda una wiki strutturata partendo dalle sorgenti che hai già (Drive, NAS, email), formiamo una persona della tua azienda come **Custode** e ti consegniamo il manuale operativo per mantenerla viva nel tempo.
+Custodia è un **servizio di consulenza chiavi-in-mano**, non un software. In 3-4 settimane installiamo nella tua azienda una wiki strutturata partendo dalle sorgenti che hai già (Drive, NAS, email), formiamo una persona della tua azienda come **Custode** e ti consegniamo il manuale operativo per mantenerla viva nel tempo.
 
 Il vault risultante è una cartella di file Markdown sui tuoi sistemi. Si apre con Obsidian o con qualunque editor. Funziona anche offline, anche senza AI. Claude (Anthropic) è lo strumento che usiamo per costruirla velocemente e per consultarla con la tastiera ogni mattina — ma resta strumento, non dipendenza.
 
@@ -70,7 +70,7 @@ Ritorniamo in azienda per formare il Custode sui 3 rituali (giornaliero, settima
 
 ## PER CHI — l'ICP
 
-### Per chi è Catasto
+### Per chi è Custodia
 
 <!-- Layout: 2 colonne. Sinistra: "Per chi è" con checkmark. Destra: "Per chi NON è" con X. -->
 
@@ -211,11 +211,11 @@ La Cassetta degli AI-trezzi
 
 <!-- Footer minimo, su sfondo scuro o crema, 3 colonne. -->
 
-**Catasto**
+**Custodia**
 La wiki aziendale chiavi-in-mano per PMI italiane da 30 a 50 persone.
 
 **Risorse**
-- [Cosa è Catasto](#cos-è-catasto)
+- [Cosa è Custodia](#cos-è-custodia)
 - [Come funziona](#come-funziona)
 - [Prezzi](#quanto-costa)
 - [FAQ](faq.md)
@@ -229,14 +229,14 @@ La wiki aziendale chiavi-in-mano per PMI italiane da 30 a 50 persone.
 - DPA (Data Processing Agreement) — disponibile su richiesta
 
 **Open source**
-Catasto è basato sul toolkit `claude-second-brain`, pubblicato come open source.
+Custodia è basato sul toolkit `claude-second-brain`, pubblicato come open source.
 [github.com/[handle]/claude-second-brain](#) *(placeholder)*
 
 ---
 
 © [ANNO CORRENTE] Valentino Grossi — P. IVA [P.IVA] — Made in Italy
 
-*Catasto è un servizio di consulenza, non un prodotto SaaS. Il marchio "Catasto" è nome di lavoro, validazione finale in corso.*
+*Custodia è un servizio di consulenza, non un prodotto SaaS. Il marchio "Custodia" è nome di lavoro, validazione finale in corso.*
 
 ---
 
@@ -248,7 +248,7 @@ Indicazioni operative per la conversione di questa pagina in HTML/Astro/Hugo:
 - **Palette**: crema/avorio + nero + un accento (es. ruggine, verde bosco, blu polvere). No gradient. No glassmorphism. Estetica "ufficio italiano colto", non "startup SaaS USA".
 - **Foto**: meglio illustrazioni o foto di schedari/cartelle/uffici reali italiani che render 3D astratti. Se non disponibili, niente foto — typography-first.
 - **Performance**: pagina statica, no framework JS pesante. Astro o Hugo con tema minimal. Target Lighthouse 95+ su tutti gli assi.
-- **SEO**: title `Catasto — Wiki aziendale chiavi-in-mano per PMI italiane`. Meta description ~150 caratteri usando la tagline lunga. Schema.org `LocalBusiness` o `ProfessionalService`.
+- **SEO**: title `Custodia — Wiki aziendale chiavi-in-mano per PMI italiane`. Meta description ~150 caratteri usando la tagline lunga. Schema.org `LocalBusiness` o `ProfessionalService`.
 - **Analytics**: Plausible o Umami self-hosted, no Google Analytics (coerente con il pitch privacy).
 - **Form contatto**: backend tipo Formspree / Netlify Forms / Plunk, no Mailchimp. Conferma di ricezione immediata in italiano, no auto-responder generici.
 - **Accessibilità**: AA conforme. Niente CTA "Click qui", testi descrittivi nei link. Heading hierarchy pulita (un solo H1, gerarchia rispettata).

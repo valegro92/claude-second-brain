@@ -1,4 +1,4 @@
-# Cheatsheet Custode — Catasto
+# Cheatsheet Custode — Custodia
 
 **1 pagina A4 da tenere a portata di mano.** Riassunto operativo per il Custode designato, consegnato a fine handover (Atto 3).
 
@@ -128,4 +128,4 @@ Il manuale custode è il riferimento per il tuo sostituto. Affiancalo 2-3 settim
 
 ---
 
-*Cheatsheet stampabile fronte/retro A4. Versione 1.0 per delivery Catasto. Sostituisci `XX` con le tue iniziali e `<X>` con il nome del tuo reparto.*
+*Cheatsheet stampabile fronte/retro A4. Versione 1.0 per delivery Custodia. Sostituisci `XX` con le tue iniziali e `<X>` con il nome del tuo reparto.*

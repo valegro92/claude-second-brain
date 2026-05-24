@@ -1,4 +1,4 @@
-# Contratto di delivery — Catasto
+# Contratto di delivery — Custodia
 
 > **DISCLAIMER IMPORTANTE.** Questo documento è una **bozza tecnica** redatta a partire dallo skeleton del brief interno [`_brief/06-cost-and-risk.md`](../../\_brief/06-cost-and-risk.md), sezione B.5. **Va validato da un avvocato GDPR italiano** prima della firma con qualsiasi cliente. In particolare devono essere verificate: clausole di limitazione di responsabilità (art. 1229 c.c.), DPA ex art. 28 GDPR, disciplina del recesso, IP e licenza del toolkit. Costo orientativo di una revisione legale completa: 800 - 1.500 € una tantum. Per il primo cliente, **non firmare senza** revisione legale.
 

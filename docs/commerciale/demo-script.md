@@ -1,10 +1,10 @@
-# Script demo — Catasto
+# Script demo — Custodia
 
 Script per registrare una demo video di **5-7 minuti** che Valentino userà come asset commerciale (LinkedIn, landing page, primo contatto). La registrazione è manuale (OBS / QuickTime / Loom) — questo file dà setup, scaletta, copione e fallback.
 
 Obiettivo della demo: in 5-7 minuti, un decisore PMI deve capire **cos'è**, **come si usa quotidianamente**, **cosa resta in azienda**.
 
-> Nota: "Catasto" è nome di lavoro. Riferimenti al naming finale da aggiornare quando definito (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)).
+> Nota: "Custodia" è nome di lavoro. Riferimenti al naming finale da aggiornare quando definito (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)).
 
 ---
 
@@ -70,11 +70,11 @@ Target totale: **6 minuti**. Margine ±1 minuto.
 
 ### Scena 1 — Apertura e contesto (0:30)
 
-**Cosa mostrare**: webcam in primo piano, sfondo neutro, eventuale slide titolo "Catasto" dal deck.
+**Cosa mostrare**: webcam in primo piano, sfondo neutro, eventuale slide titolo "Custodia" dal deck.
 
 **Cosa dire** (copione letterale):
 
-> *"Ciao, sono Valentino. In 6 minuti ti faccio vedere come funziona Catasto, il sistema che installiamo nelle PMI italiane per organizzare il loro patrimonio documentale.*
+> *"Ciao, sono Valentino. In 6 minuti ti faccio vedere come funziona Custodia, il sistema che installiamo nelle PMI italiane per organizzare il loro patrimonio documentale.*
 >
 > *Lo vedrai dalla parte di un'azienda inventata che chiameremo Esempio Srl: officina meccanica di Brescia, 38 persone, 8 anni di Drive condivisi sedimentati e una casella `info@` da 14.000 mail. Il classico caso.*
 >
@@ -198,7 +198,7 @@ Mostrare Claude che carica `clienti/rossi-srl/rossi-srl.md` e riassume.
 >
 > *Se quello che ho fatto vedere ha senso per la tua azienda, prenota una chiamata di 30 minuti — il link te lo lascio in descrizione. Capiamo insieme se sei un caso servibile, senza vendere nulla per forza. Grazie."*
 
-**Azione finale**: webcam in primo piano, sorriso, fade out con logo Catasto + tagline corta + URL.
+**Azione finale**: webcam in primo piano, sorriso, fade out con logo Custodia + tagline corta + URL.
 
 ---
 
@@ -234,7 +234,7 @@ Mostrare Claude che carica `clienti/rossi-srl/rossi-srl.md` e riassume.
 
 ## Checklist post-registrazione
 
-- [ ] Salvare il file MP4 originale con naming `demo-catasto-vYYYY-MM-DD.mp4`
+- [ ] Salvare il file MP4 originale con naming `demo-custodia-vYYYY-MM-DD.mp4`
 - [ ] Editing in iMovie / DaVinci Resolve: tagliare pause, inserire titoli scena (opzionale), aggiungere logo iniziale e finale
 - [ ] Sottotitoli automatici + revisione manuale (italiano + opzionale inglese)
 - [ ] Export in 2 formati: 1080p per LinkedIn/landing, 720p per email

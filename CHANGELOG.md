@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Tutte le modifiche notevoli al toolkit `wiki-toolkit` (nome di lavoro: **Catasto**).
+Tutte le modifiche notevoli al toolkit `wiki-toolkit` (nome di lavoro: **Custodia**).
 
 Formato basato su [Keep a Changelog](https://keepachangelog.com), versioning [SemVer](https://semver.org).
 
@@ -76,7 +76,7 @@ Formato basato su [Keep a Changelog](https://keepachangelog.com), versioning [Se
 - `04-step-2-tech-plan.md` — architettura completa scanner/extractor/batch
 - `05-mcp-audit.md` — verdict MCP per le 5 fonti
 - `06-cost-and-risk.md` — cost model + GDPR + contratto skeleton
-- `07-naming-brand.md` — proposta "Catasto" con shortlist e razionale
+- `07-naming-brand.md` — proposta "Custodia" con shortlist e razionale
 
 ---
 

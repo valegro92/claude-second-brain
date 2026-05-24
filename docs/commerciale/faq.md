@@ -1,16 +1,16 @@
-# FAQ — Catasto
+# FAQ — Custodia
 
 Domande frequenti, risposte brevi, niente buzzword.
 
 Se la tua domanda non c'è, scrivimi a `valentino@cassettadegliaitrezzi.it` *(placeholder)* — la aggiungo qui.
 
-> Nota: "Catasto" è il nome di lavoro. Validazione finale dominio + marchio EUIPO/UIBM in corso (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)).
+> Nota: "Custodia" è il nome di lavoro. Validazione finale dominio + marchio EUIPO/UIBM in corso (vedi [`_brief/07-naming-brand.md`](../../\_brief/07-naming-brand.md)).
 
 ---
 
-## Cos'è Catasto
+## Cos'è Custodia
 
-### Catasto è un software?
+### Custodia è un software?
 
 No. È un **servizio di consulenza chiavi-in-mano** che ti lascia in azienda una wiki strutturata (cartella di file `.md` sul tuo Drive/NAS) + il tuo Custode interno formato per mantenerla. Niente abbonamento, niente piattaforma proprietaria.
 
@@ -26,13 +26,13 @@ Dai file che hai già: Drive condivisi, NAS, casella email `info@`, eventuali Sh
 
 Una persona della tua azienda — di solito l'IT/Office manager — che diventa responsabile della wiki. Spende 3-5 ore a settimana per i primi 3 mesi e poi 2-3 ore/settimana a regime. Senza Custode designato, non vendiamo: il vault muore in 6 settimane.
 
-### Catasto è basato su Claude / OpenAI / quale AI?
+### Custodia è basato su Claude / OpenAI / quale AI?
 
 Su **Claude (Anthropic)**. Lo usiamo come strumento di lettura/scrittura assistita. La wiki è in Markdown puro, quindi anche se domani cambiassi modello AI (o lo togliessi del tutto), il vault funziona — lo apri con Obsidian o qualunque editor.
 
 ### In cosa è diverso da Notion / SharePoint / Confluence?
 
-Quelli sono **contenitori vuoti** che devi popolare a mano. Catasto è **delivery + contenuto + ruolo**: ti consegniamo la struttura *già popolata* con i tuoi dati, e ti formiamo la persona che la mantiene. Più simile a "ti installiamo un archivista" che a "ti diamo un'app".
+Quelli sono **contenitori vuoti** che devi popolare a mano. Custodia è **delivery + contenuto + ruolo**: ti consegniamo la struttura *già popolata* con i tuoi dati, e ti formiamo la persona che la mantiene. Più simile a "ti installiamo un archivista" che a "ti diamo un'app".
 
 ---
 
@@ -126,7 +126,7 @@ Capita. Il manuale custode ([`docs/05-manuale-custode.md`](../05-manuale-custode
 
 ### Stiamo facendo una ristrutturazione aziendale / fusione / cambio di assetto
 
-Aspetta la fine. Catasto richiede **stabilità organizzativa di 6-9 mesi minimo**. Durante una ristrutturazione i ruoli cambiano, le decisioni vengono ribaltate, il vault diventa documentazione di cose che non esistono più. Riparliamone a ristrutturazione conclusa.
+Aspetta la fine. Custodia richiede **stabilità organizzativa di 6-9 mesi minimo**. Durante una ristrutturazione i ruoli cambiano, le decisioni vengono ribaltate, il vault diventa documentazione di cose che non esistono più. Riparliamone a ristrutturazione conclusa.
 
 ### Usiamo TeamSystem / Zucchetti / Danea — integrate?
 

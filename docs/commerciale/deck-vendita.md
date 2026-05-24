@@ -2,21 +2,21 @@
 marp: true
 theme: default
 paginate: true
-title: Catasto — la wiki che la tua PMI stava aspettando
+title: Custodia — la wiki che la tua PMI stava aspettando
 ---
 
 <!--
-Deck di vendita per Catasto.
+Deck di vendita per Custodia.
 Formato compatibile Marp / reveal.js: ogni `---` su riga vuota separa una slide.
 Render: `marp deck-vendita.md` → PDF/HTML.
 
-Nota sul naming: "Catasto" è il nome di lavoro raccomandato dal brief
+Nota sul naming: "Custodia" è il nome di lavoro raccomandato dal brief
 `_brief/07-naming-brand.md`. La scelta definitiva richiede verifica
 dominio + ricerca marchio EUIPO/UIBM (classi Nizza 9 e 42) prima
 dell'adozione commerciale. Fino ad allora trattare come placeholder.
 -->
 
-# Catasto
+# Custodia
 
 ## La wiki che la tua PMI stava aspettando
 
@@ -55,11 +55,11 @@ Il pattern è sempre lo stesso: si parte con entusiasmo, si fa la struttura, **n
 
 ---
 
-# Cosa è Catasto, in una frase
+# Cosa è Custodia, in una frase
 
 > Le PMI italiane perdono ore ogni settimana cercando file, riunioni, decisioni vecchie.
 >
-> Catasto installa in 3-4 settimane una **wiki aziendale chiavi-in-mano**, costruita partendo dai vostri Drive, mail e NAS — senza chiedervi di rifare nulla.
+> Custodia installa in 3-4 settimane una **wiki aziendale chiavi-in-mano**, costruita partendo dai vostri Drive, mail e NAS — senza chiedervi di rifare nulla.
 >
 > Formiamo un vostro collega come **Custode** e lasciamo un sistema leggibile da chiunque, anche da Claude.
 >
@@ -357,7 +357,7 @@ Tempi medi di risposta: 24h lavorative.
 
 ---
 
-# Catasto
+# Custodia
 
 ## La wiki che la tua PMI stava aspettando
 

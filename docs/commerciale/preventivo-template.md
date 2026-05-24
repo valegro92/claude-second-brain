@@ -1,4 +1,4 @@
-# Preventivo — Catasto
+# Preventivo — Custodia
 
 > Template di preventivo personalizzabile per ogni cliente.
 > I campi tra `[ ]` sono placeholder da sostituire prima dell'invio.
@@ -38,11 +38,11 @@ Cortese attenzione: [REFERENTE — nome, ruolo]
 
 ## Oggetto
 
-**Catasto — installazione wiki aziendale chiavi-in-mano per [NOME CLIENTE]**
+**Custodia — installazione wiki aziendale chiavi-in-mano per [NOME CLIENTE]**
 
 Offerta per la costruzione di una wiki aziendale strutturata (vault Markdown) partendo dalle sorgenti documentali esistenti di [NOME CLIENTE], con formazione del Custode interno designato e consegna del manuale operativo.
 
-> Nota commerciale: "Catasto" è il nome di lavoro del servizio. La denominazione contrattuale puntuale è "consulenza per la costruzione di wiki aziendale documentale strutturata mediante toolkit `claude-second-brain`".
+> Nota commerciale: "Custodia" è il nome di lavoro del servizio. La denominazione contrattuale puntuale è "consulenza per la costruzione di wiki aziendale documentale strutturata mediante toolkit `claude-second-brain`".
 
 ---
 
@@ -285,4 +285,4 @@ Timbro azienda:
 
 ---
 
-*Documento generato a partire dal template `docs/commerciale/preventivo-template.md` del toolkit Catasto. Versione 1.0 — [DATA EMISSIONE].*
+*Documento generato a partire dal template `docs/commerciale/preventivo-template.md` del toolkit Custodia. Versione 1.0 — [DATA EMISSIONE].*
