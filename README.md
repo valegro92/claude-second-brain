@@ -1,99 +1,116 @@
-# Claude Second Brain — Toolkit Wiki PMI
+# wiki-toolkit — Wiki aziendale per PMI in 4 settimane
 
-**Una wiki aziendale costruita per una PMI di 30-50 persone, in 4 settimane, con Valentino al fianco del cliente.**
-
-Non è un'app, non è un SaaS, non è un abbonamento. È un toolkit consulenziale: un repo da clonare sui sistemi del cliente + 3 atti di delivery presidiati + un manuale operativo per il Custode interno.
+Costruisci una wiki ordinata e affidabile sui sistemi di una PMI italiana di 30-50 persone. Toolkit `wiki` (CLI) + 3 atti di delivery presidiati da un consulente + manuale operativo per il Custode interno. Dati sui sistemi del cliente, niente SaaS.
 
 ---
 
-## A chi serve
+## Per chi
 
-Una PMI italiana, **30-50 dipendenti**, manifatturiera o servizi B2B, con 5-15 anni di patrimonio documentale sparso tra Drive condivisi, NAS, caselle email, portatili. Riconoscibile da due segnali:
+PMI italiana, **30-50 dipendenti**, manifatturiera o servizi B2B, 5-15 anni di patrimonio documentale sparso tra Drive condivisi, NAS, caselle email, portatili. Due segnali da verificare:
 
-1. **Un dolore quotidiano**: il commerciale risponde citando offerte vecchie, l'amministrazione cerca il contratto firmato e trova tre versioni, ogni nuovo assunto passa 3 settimane a chiedere "dove sta...".
-2. **Un IT/Office manager interno** — la persona che già gestisce account, accessi, NAS. È il candidato naturale a diventare **Custode** della wiki.
+1. **Un dolore quotidiano**: il commerciale risponde citando offerte vecchie, l'amministrazione cerca contratti e trova tre versioni, ogni nuovo assunto perde 3 settimane a chiedere "dove sta".
+2. **Un IT/Office manager interno** disponibile a diventare **Custode** della wiki.
 
-Se non c'è il Custode, il prodotto non funziona. Se ci sono entrambi i segnali, sì.
-
----
-
-## Cosa cambia nella giornata di un dipendente
-
-### Prima
-
-Maria (commerciale, MR) il lunedì mattina alle 9. Cerca il contratto Rossi Srl in 3 Drive diversi (uno è quello "vecchio", uno "nuovo definitivo", uno "definitivo_v2"). Trova due versioni datate diversamente, non sa quale sia firmata. Chiede a Mario in chat. Mario le dice di chiedere a Giulia in amministrazione. Giulia non c'è. Maria intanto risponde al cliente con quello che ricorda. **15 minuti persi, risposta approssimativa.**
-
-La sera, una decisione presa in call ("a Rossi anticipiamo la consegna al 15 giugno") resta nella sua testa e in uno scambio WhatsApp. Domani non se la ricorda nessun altro.
-
-### Dopo
-
-Maria apre Cowork sul vault aziendale. Scrive *"Buongiorno Claude, sono MR"*. Claude legge memoria aziendale + memoria reparto Commerciale + suo daily personale. Risponde:
-
-> *Sessione 47 aperta. Hai 3 clienti attivi questa settimana: Rossi Srl (anticipo consegna), Bianchi Forniture (rinnovo annuale), Verdi Costruzioni (offerta nuova commessa). Ieri avevi annotato che oggi vai a chiudere l'offerta Verdi. Procediamo?*
-
-Maria lavora. A sera scrive *"Buonanotte Claude"*. Claude propone: *"Da oggi: salvo la decisione 'a Rossi anticipiamo al 15 giugno' nella memoria del cliente? E la lezione 'Verdi vuole offerte sempre via PEC, mai email' nelle procedure del reparto?"*. Maria risponde `sì, sì`. 60 secondi. Fine.
-
-Il giorno dopo, quando Luca apre il cliente Rossi, quelle decisioni sono lì.
+Se manca il Custode, il toolkit non funziona. Se ci sono entrambi i segnali, sì.
 
 ---
 
-## Come funziona
+## Quick start
 
-Il vault è una cartella di file `.md` sui sistemi del cliente. Strutturata in 6 layer di memoria (azienda, reparto, oggetto) con 4 ruoli operativi (Owner, Custode, Editor, Contributor) e 3 rituali (giornaliero personale, settimanale di reparto, mensile aziendale).
+```bash
+# Prerequisiti macOS/Linux
+brew install python@3.11 uv pandoc      # Linux: usa apt/dnf equivalenti
+brew install tesseract tesseract-lang   # opzionale, per OCR PDF scansionati
 
-Claude legge i file giusti al momento giusto. I dipendenti scrivono solo dove possono scrivere. Il Custode tiene pulito. L'Owner approva le promozioni a memoria aziendale.
+# Clone e installazione
+git clone https://github.com/valegro92/claude-second-brain.git
+cd claude-second-brain
+uv venv && source .venv/bin/activate
+uv pip install -e ".[dev,ocr]"
 
-Nessuna magia. Nessun server intermedio. I dati restano sui sistemi del cliente.
+# Bootstrap cliente
+wiki init                # wizard interattivo: slug, nome, sorgenti
+wiki scan --client SLUG  # scandaglia NAS / Drive / email
+wiki watch --client SLUG # modalità sempre-in-ascolto sulla `_inbox/`
+```
 
-Per la teoria completa: [`docs/06-framework-pmi.md`](docs/06-framework-pmi.md).
+Per la procedura completa (kick-off, scandagliamento, handover) vedi [`bootstrap/RUNBOOK.md`](bootstrap/RUNBOOK.md).
 
 ---
 
-## Come si compra
+## Comandi principali
 
-Si contatta Valentino. Una prima call di 30 minuti per verificare se sei dentro l'ICP e se hai il Custode disponibile. Se sì, parte la delivery in 3 atti:
-
-| Atto | Quando | Cosa succede |
-|---|---|---|
-| **1. Kick-off** | Giorno 1, on-site, ½ giornata | Wizard azienda, connessione MCP, perimetro privacy firmato, vault scheletro |
-| **2. Scandagliamento** | Settimana 1-2, remoto + call settimanale | Si popola il vault con i contenuti vivi del reparto pilota, batch supervisionati |
-| **3. Handover** | Giorno finale, on-site, ½ giornata | Training Custode sui 3 rituali, primo rituale fatto insieme, consegna manuale custode |
-
-**Investimento indicativo**: 8.000-15.000 € setup una tantum, opzionale 800-1.500 €/mese di manutenzione. Da validare in trattativa (vedi [`docs/01-cosa-vendi.md`](docs/01-cosa-vendi.md) per il dettaglio).
-
-**Esclusioni esplicite v1**: connettori a gestionali italiani senza API (TeamSystem, Zucchetti, Danea, Mexal), modalità on-premise per settori regolamentati. Verranno in v1.5 o su quotazione separata.
+| Comando | Cosa fa |
+|---|---|
+| `wiki init` | Wizard di bootstrap: crea `bootstrap/clients/<slug>/config.yml` |
+| `wiki scan --client SLUG` | Lancia gli scanner attivi (NAS, gdrive, m365, email, server) |
+| `wiki extract --client SLUG` | Estrae il testo dai file dell'inventory |
+| `wiki categorize --client SLUG` | Categorizza (regole + Claude) in 5 categorie |
+| `wiki reconcile --client SLUG` | Dedup hash + soft (versioni, copie) → bozze di decisione |
+| `wiki approve --client SLUG` | Apre la batch UI per approvazione interattiva |
+| `wiki watch --client SLUG` | Modalità sempre-in-ascolto sulla `_inbox/<slug>/` |
+| `wiki status --client SLUG` | Riepilogo: file per sorgente, estratti, bozze, costo Claude |
 
 ---
 
 ## Documentazione
 
-Sette documenti, indirizzati a chi legge in un dato momento.
+Per ogni audience un percorso, vedi [`INIZIA-QUI.md`](INIZIA-QUI.md) per scegliere.
 
-### Per Valentino (chi vende e consegna)
+- **Sei Valentino (o consulente)**: [`docs/01-cosa-vendi.md`](docs/01-cosa-vendi.md) → playbook commerciale. Poi [`docs/02-kickoff-checklist.md`](docs/02-kickoff-checklist.md), [`docs/03-scandagliamento.md`](docs/03-scandagliamento.md), [`docs/04-handover-checklist.md`](docs/04-handover-checklist.md).
+- **Sei il Custode**: [`docs/05-manuale-custode.md`](docs/05-manuale-custode.md) — il tuo manuale operativo.
+- **Sei un Contributor** (dipendente): [`docs/07-manuale-persone.md`](docs/07-manuale-persone.md) — 1 pagina, 5 minuti.
+- **Sei un dev che vuole contribuire**: vedi sezione sotto + [`INIZIA-QUI.md`](INIZIA-QUI.md).
 
-| | |
-|---|---|
-| [**01 — Cosa vendi**](docs/01-cosa-vendi.md) | Playbook commerciale: ICP, pricing, esclusioni, struttura della demo, 4 casi in cui non vendere |
-| [**02 — Kick-off checklist**](docs/02-kickoff-checklist.md) | Atto 1, mezza giornata on-site. Test idoneità, wizard, perimetro privacy, MCP, inventario |
-| [**03 — Scandagliamento**](docs/03-scandagliamento.md) | Atto 2, 1-2 settimane supervisionate. Workflow batch, errori comuni, costi Claude, privacy |
-| [**04 — Handover checklist**](docs/04-handover-checklist.md) | Atto 3, mezza giornata on-site. Training Custode, primo rituale, mail decommissioning, contratto manutenzione |
+Riferimenti operativi:
+- [`bootstrap/INSTALL.md`](bootstrap/INSTALL.md) — installazione e dipendenze
+- [`bootstrap/RUNBOOK.md`](bootstrap/RUNBOOK.md) — 3 atti di delivery, comando per comando
+- [`docs/06-framework-pmi.md`](docs/06-framework-pmi.md) — la teoria: 6 layer, 4 ruoli, 3 rituali
 
-### Per il cliente (Custode, Owner, dipendenti)
+---
 
-| | |
-|---|---|
-| [**05 — Manuale custode**](docs/05-manuale-custode.md) | Il manuale operativo del Custode. 6 fasi, 5 categorie, 6 trappole, 3 rituali a regime |
-| [**06 — Il framework PMI**](docs/06-framework-pmi.md) | La teoria: 6 layer di memoria, 4 ruoli, 4 regole, 3 livelli di protocollo, 8 pattern di scrittura |
-| [**07 — Manuale persone**](docs/07-manuale-persone.md) | 1 pagina per chiunque in azienda. Cosa puoi fare, cosa non devi fare, a chi chiedere |
+## Per sviluppatori
 
-### Punto d'ingresso al repo
+### Struttura
 
-| | |
-|---|---|
-| [**INIZIA-QUI**](INIZIA-QUI.md) | Per chi ha appena clonato il repo: 3 percorsi di lettura a seconda del ruolo |
+```
+wiki/        # CLI + pipeline + watcher
+scanners/    # NAS, gdrive, m365, email, server (output: FileRecord)
+extractors/  # PDF/DOCX/XLSX/EML/plain (output: ExtractionResult)
+categorizers/# rules + Claude (5 categorie)
+reconcilers/ # dedup hash, dedup soft, schede oggetto
+batch_ui/    # UI di approvazione bozze (Flask)
+bootstrap/   # wizard + template config
+tests/       # pytest, 190+ test, fixture self-contained
+```
+
+### Contribuire
+
+```bash
+# Setup ambiente di sviluppo
+uv venv && source .venv/bin/activate
+uv sync --extra dev
+
+# Lancia i test
+pytest tests/ -v
+
+# Lint
+ruff check .
+
+# Smoke test end-to-end (genera dataset pilota + esercita la pipeline)
+pytest tests/e2e/ -v
+```
+
+Le dipendenze opzionali di runtime (`pandoc`, `tesseract`, `reportlab`) sono gestite via marker pytest (`requires_pandoc`, `requires_tesseract`, `requires_reportlab` in `tests/conftest.py`): se non presenti i test relativi sono auto-skippati, niente rumore in CI.
+
+CI: GitHub Actions su Python 3.11 e 3.12, vedi `.github/workflows/test.yml`.
 
 ---
 
 ## Licenza
 
-MIT — [Valentino Grossi](https://lacassettadegliaitrezzi.substack.com)
+MIT.
+
+## Autore
+
+[Valentino Grossi](https://lacassettadegliaitrezzi.substack.com) — La Cassetta degli AI-trezzi.

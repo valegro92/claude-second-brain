@@ -15,18 +15,18 @@ Convenzioni:
 I costi sono approssimazioni — il driver economico vero è il tempo di
 Valentino, non la spesa Claude (vedi brief 7.4).
 """
+
 from __future__ import annotations
 
 import json
 import logging
-import os
-from datetime import datetime, timezone
+from collections.abc import Iterable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
-
-from scanners._base import FileRecord
+from typing import Any
 
 from categorizers._enums import Categoria
+from scanners._base import FileRecord
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,9 @@ def _record_to_payload(record: FileRecord, mode: str, state_dir: Path | None) ->
         "name": record.name,
         "path": record.path,
         "size": record.size,
-        "mtime": record.mtime.isoformat() if isinstance(record.mtime, datetime) else str(record.mtime),
+        "mtime": record.mtime.isoformat()
+        if isinstance(record.mtime, datetime)
+        else str(record.mtime),
         "mime": record.mime,
     }
     if mode == "full" and state_dir is not None:
@@ -192,18 +194,19 @@ def _chunked(seq: list[FileRecord], n: int) -> Iterable[list[FileRecord]]:
         yield seq[i : i + n]
 
 
-def _get_anthropic_client():  # pragma: no cover - tested via mock
-    """Costruisce un client Anthropic on-demand (import lazy)."""
-    try:
-        import anthropic  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError(
-            "Il pacchetto `anthropic` non è installato. Aggiungilo via uv."
-        ) from exc
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY non impostata nell'ambiente.")
-    return anthropic.Anthropic(api_key=api_key)
+def _get_anthropic_client(
+    config: dict[str, Any] | None = None, state_dir: Path | None = None
+):  # pragma: no cover - tested via mock
+    """Costruisce un client LLM on-demand attraverso l'astrazione `wiki.llm`.
+
+    Step 3: non importa più ``anthropic`` direttamente — delega a
+    :func:`wiki.llm.get_llm_client`, che sceglie il backend (anthropic_api
+    standard o bedrock) in base alla configurazione del cliente.
+    """
+    # Import locale per evitare import circolari con i caller della pipeline.
+    from wiki.llm import get_llm_client
+
+    return get_llm_client(config or {}, state_dir=state_dir)
 
 
 def categorize_batch(
@@ -214,6 +217,7 @@ def categorize_batch(
     batch_size: int = DEFAULT_BATCH_SIZE,
     state_dir: Path | None = None,
     client: Any | None = None,
+    config: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Categorizza una lista di record via Claude, in batch.
 
@@ -236,7 +240,7 @@ def categorize_batch(
         raise ValueError(f"Modalità sconosciuta: {mode}")
 
     if client is None:
-        client = _get_anthropic_client()
+        client = _get_anthropic_client(config=config, state_dir=state_dir)
 
     results: list[dict[str, Any]] = []
     for chunk in _chunked(records, batch_size):
@@ -257,7 +261,7 @@ def categorize_batch(
             _log_cost(
                 state_dir,
                 {
-                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "ts": datetime.now(UTC).isoformat(),
                     "stage": "categorize",
                     "model": model,
                     "tokens_in": tokens_in,
@@ -314,8 +318,8 @@ def _extract_usage(response: Any) -> tuple[int, int]:
 
 
 __all__ = [
-    "DEFAULT_MODEL",
     "DEFAULT_BATCH_SIZE",
+    "DEFAULT_MODEL",
     "PRICING_USD_PER_MTOK",
     "categorize_batch",
 ]

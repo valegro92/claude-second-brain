@@ -1,12 +1,14 @@
 """Base class e schema per gli scanner. Interfaccia stabile, non modificare senza aggiornare tutti gli scanner concreti."""
+
 from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 
 @dataclass
@@ -14,7 +16,9 @@ class FileRecord:
     """Rappresentazione uniforme di un file scoperto da uno scanner, indipendente dalla sorgente."""
 
     source: str  # "nas", "gdrive", "m365", "email", "server"
-    source_id: str  # id univoco nella sorgente (path locale, file id Google, message-id email, ecc.)
+    source_id: (
+        str  # id univoco nella sorgente (path locale, file id Google, message-id email, ecc.)
+    )
     path: str  # path leggibile (ricostruito dalla cartella di origine)
     name: str
     size: int

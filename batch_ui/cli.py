@@ -6,6 +6,7 @@ Flag:
   --no-browser     non aprire automaticamente il browser
   --debug          avvia Flask in modalita' debug (no reloader)
 """
+
 from __future__ import annotations
 
 import logging
@@ -27,7 +28,9 @@ logger = logging.getLogger(__name__)
 @click.option("--debug", is_flag=True, default=False, help="Avvia in debug mode.")
 def main(port: int, host: str, no_browser: bool, debug: bool) -> None:
     """Avvia il server Flask del batch approval workflow."""
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+    )
     app = create_app()
     url = f"http://{host}:{port}/"
     if not no_browser:

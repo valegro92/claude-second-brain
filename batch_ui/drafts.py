@@ -9,6 +9,7 @@ Il diff viewer e' HTML statico (no JS) con classi CSS che evidenziano:
 - `.warning-marker` per linee di warning
 - `.generated` per contenuto sotto frontmatter `generato-da:`
 """
+
 from __future__ import annotations
 
 import html
@@ -92,7 +93,7 @@ def parse_frontmatter(raw: str) -> tuple[dict[str, Any], str]:
     if not m:
         return {}, raw
     block = m.group(1)
-    body = raw[m.end():]
+    body = raw[m.end() :]
     data: dict[str, Any] = {}
     current_key: str | None = None
     for line in block.splitlines():
@@ -136,7 +137,9 @@ def list_batches(drafts_root: Path) -> list[str]:
     """Elenca i batch (sottocartelle di `_status/drafts/`) in ordine alfabetico."""
     if not drafts_root.exists():
         return []
-    return sorted(p.name for p in drafts_root.iterdir() if p.is_dir() and not p.name.startswith("_"))
+    return sorted(
+        p.name for p in drafts_root.iterdir() if p.is_dir() and not p.name.startswith("_")
+    )
 
 
 def list_drafts(batch_dir: Path) -> list[DraftInfo]:

@@ -1,0 +1,66 @@
+# Esclusioni dall'immagine wiki-toolkit on-premise.
+# Riduce il context inviato al daemon Docker (build più veloce) e impedisce
+# che dati sensibili o build artifact entrino nell'immagine finale.
+
+# --- Virtualenv e cache Python ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# --- Git e CI ---
+.git/
+.gitignore
+.gitattributes
+.github/
+.claude/
+.editorconfig
+
+# --- Dati runtime (MAI nell'immagine) ---
+_status/
+_inbox/
+_legacy-single-user/
+
+# --- Config cliente con credenziali (mountati come volume, mai nell'immagine) ---
+bootstrap/clients/
+bootstrap/auth/.*-token.json
+bootstrap/auth/credentials.json
+bootstrap/auth/service-account-*.json
+
+# --- Test e fixture ---
+tests/
+_fixtures/
+
+# --- Documentazione / brief (mai nell'immagine runtime) ---
+_brief/
+docs/
+*.md
+README.md
+INIZIA-QUI.md
+
+# --- Vault: è del cliente, va mountato come volume ---
+vault/
+
+# --- Binari e file temporanei ---
+*.bak
+*.tmp
+*.log
+.DS_Store
+*.DS_Store
+
+# --- Docker stesso ---
+Dockerfile
+docker-compose.yml
+.dockerignore

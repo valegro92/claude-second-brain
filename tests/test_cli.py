@@ -3,9 +3,11 @@
 Usa ``CliRunner`` di click per smoke test (--help su ogni comando) e per
 verificare il routing con una fixture di config minima.
 """
+
 from __future__ import annotations
 
 import json
+from datetime import UTC
 from pathlib import Path
 
 import pytest
@@ -14,7 +16,6 @@ from click.testing import CliRunner
 
 from wiki import cli as cli_module
 from wiki.cli import main
-
 
 # --- fixture --------------------------------------------------------------
 
@@ -196,17 +197,27 @@ def test_categorize_counts_real_records(isolated_repo: Path) -> None:
     inv_dir = isolated_repo / "_status" / "acme" / "inventory"
     inv_dir.mkdir(parents=True, exist_ok=True)
     # Costruiamo 2 record validi
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from scanners._base import FileRecord
 
     r1 = FileRecord(
-        source="nas", source_id="a", path="commerciale/x.pdf", name="x.pdf",
-        size=1000, mtime=datetime.now(timezone.utc), sha256="a" * 64,
+        source="nas",
+        source_id="a",
+        path="commerciale/x.pdf",
+        name="x.pdf",
+        size=1000,
+        mtime=datetime.now(UTC),
+        sha256="a" * 64,
     )
     r2 = FileRecord(
-        source="nas", source_id="b", path="vecchio/y.pdf", name="y.pdf",
-        size=1000, mtime=datetime(2010, 1, 1, tzinfo=timezone.utc), sha256="b" * 64,
+        source="nas",
+        source_id="b",
+        path="vecchio/y.pdf",
+        name="y.pdf",
+        size=1000,
+        mtime=datetime(2010, 1, 1, tzinfo=UTC),
+        sha256="b" * 64,
     )
     (inv_dir / "nas.jsonl").write_text(
         r1.to_jsonl() + "\n" + r2.to_jsonl() + "\n", encoding="utf-8"
@@ -224,7 +235,9 @@ def test_categorize_counts_real_records(isolated_repo: Path) -> None:
 # --- approve: senza batch_ui deve fallire con messaggio chiaro ------------
 
 
-def test_approve_without_batch_ui_module(isolated_repo: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_approve_without_batch_ui_module(
+    isolated_repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """`wiki approve` deve dire chiaramente se batch_ui.cli manca."""
     _make_client(isolated_repo, "acme")
     # Forza l'import a fallire

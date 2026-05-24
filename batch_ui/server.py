@@ -15,6 +15,7 @@ Configurazione via env vars (utili per i test):
   WIKI_STATUS_DIR  -> path a `_status/`  (default: <cwd>/_status)
   WIKI_VAULT_ROOT  -> path a `vault/`    (default: <cwd>/vault)
 """
+
 from __future__ import annotations
 
 import logging
@@ -53,8 +54,12 @@ def create_app(
         template_folder="templates",
         static_folder="static",
     )
-    app.config["STATUS_DIR"] = Path(status_dir or os.environ.get("WIKI_STATUS_DIR") or Path.cwd() / "_status")
-    app.config["VAULT_ROOT"] = Path(vault_root or os.environ.get("WIKI_VAULT_ROOT") or Path.cwd() / "vault")
+    app.config["STATUS_DIR"] = Path(
+        status_dir or os.environ.get("WIKI_STATUS_DIR") or Path.cwd() / "_status"
+    )
+    app.config["VAULT_ROOT"] = Path(
+        vault_root or os.environ.get("WIKI_VAULT_ROOT") or Path.cwd() / "vault"
+    )
     app.config["TESTING"] = testing
     _register_routes(app)
     return app
@@ -90,7 +95,7 @@ def _draft_path(batch_dir: Path, draft_name: str) -> Path:
     return candidate
 
 
-def _register_routes(app: Flask) -> None:  # noqa: C901 - registrazione lineare
+def _register_routes(app: Flask) -> None:
     @app.route("/healthz")
     def healthz() -> Any:
         return ("ok", 200, {"Content-Type": "text/plain; charset=utf-8"})

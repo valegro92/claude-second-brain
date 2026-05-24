@@ -7,6 +7,7 @@ Test progettati per girare in CI senza credenziali cloud:
 * FileRecord round-trip serializza/deserializza
 * ``apply_filters`` rispetta exclude_extensions
 """
+
 from __future__ import annotations
 
 import json
@@ -22,7 +23,6 @@ from scanners.gdrive import GDriveScanner
 from scanners.m365 import M365Scanner
 from scanners.nas import NasScanner
 from scanners.server import ServerScanner
-
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = REPO_ROOT / "_fixtures"

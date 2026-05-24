@@ -4,6 +4,7 @@ Strategia: iniettiamo ``input_fn`` e ``output_fn`` per simulare i 6 prompt
 senza TTY, e verifichiamo che il config YAML generato sia parseable e abbia
 i campi attesi.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -22,7 +23,6 @@ from bootstrap.wizard import (
     run_wizard,
     write_config,
 )
-
 
 # --- validators ----------------------------------------------------------
 
@@ -88,7 +88,7 @@ def _make_io(answers: list[str]) -> tuple[object, list[str]]:
         i = idx[0]
         idx[0] += 1
         if i >= len(answers):
-            raise AssertionError(f"input_fn esaurito alla domanda {i+1}")
+            raise AssertionError(f"input_fn esaurito alla domanda {i + 1}")
         return answers[i]
 
     def output_fn(msg: str) -> None:
@@ -110,18 +110,14 @@ def test_run_wizard_happy_path() -> None:
 
 def test_run_wizard_retries_on_bad_slug() -> None:
     # Prima risposta cattiva, la seconda ok.
-    in_fn, out_fn, _buf = _make_io(
-        ["BAD SLUG", "acme", "Acme", "GB", "VG", "nas", "safe"]
-    )
+    in_fn, out_fn, _buf = _make_io(["BAD SLUG", "acme", "Acme", "GB", "VG", "nas", "safe"])
     answers = run_wizard(input_fn=in_fn, output_fn=out_fn)  # type: ignore[arg-type]
     assert answers.slug == "acme"
 
 
 def test_run_wizard_uses_default_for_owner_when_empty() -> None:
     # Risposta vuota su owner → default "VG"
-    in_fn, out_fn, _buf = _make_io(
-        ["acme", "Acme", "GB", "", "nas", "safe"]
-    )
+    in_fn, out_fn, _buf = _make_io(["acme", "Acme", "GB", "", "nas", "safe"])
     answers = run_wizard(input_fn=in_fn, output_fn=out_fn)  # type: ignore[arg-type]
     assert answers.owner == "VG"
 
@@ -133,7 +129,7 @@ def test_render_config_replaces_placeholders() -> None:
     template = (
         "cliente:\n"
         "  slug: __SLUG__\n"
-        "  nome: \"__NOME__\"\n"
+        '  nome: "__NOME__"\n'
         "  custode: __CUSTODE__\n"
         "  owner: __OWNER__\n"
         "sorgenti:\n"
@@ -145,8 +141,12 @@ def test_render_config_replaces_placeholders() -> None:
         "  modalita: __PRIVACY__\n"
     )
     answers = WizardAnswers(
-        slug="acme", nome="Acme", custode="GB", owner="VG",
-        sorgenti=["nas"], privacy="safe",
+        slug="acme",
+        nome="Acme",
+        custode="GB",
+        owner="VG",
+        sorgenti=["nas"],
+        privacy="safe",
     )
     rendered = render_config(answers, template)
     assert "__SLUG__" not in rendered
@@ -165,8 +165,12 @@ def test_write_config_creates_files(tmp_path: Path) -> None:
     template_dst.write_text(repo_template.read_text(encoding="utf-8"), encoding="utf-8")
 
     answers = WizardAnswers(
-        slug="acme", nome="Acme Srl", custode="GB", owner="VG",
-        sorgenti=["nas", "email"], privacy="full",
+        slug="acme",
+        nome="Acme Srl",
+        custode="GB",
+        owner="VG",
+        sorgenti=["nas", "email"],
+        privacy="full",
     )
     out = write_config(
         answers,
@@ -194,8 +198,12 @@ def test_write_config_refuses_overwrite_by_default(tmp_path: Path) -> None:
     template_dst = fake_repo / "bootstrap" / "config.template.yml"
     template_dst.write_text(repo_template.read_text(encoding="utf-8"))
     answers = WizardAnswers(
-        slug="acme", nome="Acme", custode="GB", owner="VG",
-        sorgenti=["nas"], privacy="safe",
+        slug="acme",
+        nome="Acme",
+        custode="GB",
+        owner="VG",
+        sorgenti=["nas"],
+        privacy="safe",
     )
     write_config(answers, repo_root=fake_repo, template_path=template_dst)
     with pytest.raises(FileExistsError):

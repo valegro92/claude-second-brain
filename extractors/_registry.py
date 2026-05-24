@@ -9,6 +9,7 @@ Uso tipico::
         return
     result = ext.extract(file_path)
 """
+
 from __future__ import annotations
 
 import logging
@@ -62,9 +63,7 @@ def get_extractor(mime: str | None, extension: str) -> Extractor | None:
         ext_key = "." + ext_key
     ext = _BY_EXT.get(ext_key)
     if ext is None:
-        logger.info(
-            "Nessun extractor per mime=%r ext=%r — file verrà saltato", mime, extension
-        )
+        logger.info("Nessun extractor per mime=%r ext=%r — file verrà saltato", mime, extension)
     return ext
 
 

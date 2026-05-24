@@ -6,8 +6,10 @@ venga invocato, ferma il watcher.
 
 Niente segnali POSIX (i test possono girare fuori dal main thread).
 """
+
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 from typing import Any
@@ -15,7 +17,6 @@ from typing import Any
 import pytest
 
 from wiki.watcher import InboxHandler, _DebounceState, start_watcher
-
 
 # --- debounce -------------------------------------------------------------
 
@@ -105,6 +106,101 @@ def test_handler_does_not_crash_on_missing_file(tmp_path: Path) -> None:
 
 
 # --- end-to-end con Observer reale ----------------------------------------
+
+
+def test_handler_retries_on_pipeline_exception(tmp_path: Path) -> None:
+    """Se il pipeline crasha, il watcher ritenta fino a max_retries volte."""
+    attempts: list[int] = []
+
+    def flaky_pipeline(p: Path, _cfg: dict[str, Any], _state: Path) -> Any:
+        attempts.append(len(attempts) + 1)
+        raise RuntimeError("boom")
+
+    handler = InboxHandler(
+        config={},
+        state_dir=tmp_path / "state",
+        pipeline=flaky_pipeline,
+        debounce_s=0.0,
+        max_retries=3,
+        retry_backoff_s=0.01,  # quasi zero, test veloce
+    )
+    f = tmp_path / "doc.txt"
+    f.write_text("ciao", encoding="utf-8")
+    handler.on_created(_RecorderEvent(str(f)))
+    assert attempts == [1, 2, 3]
+    # File finito in DLQ
+    dlq = tmp_path / "state" / "dead-letter"
+    assert dlq.exists()
+    sub = list(dlq.iterdir())
+    assert len(sub) == 1
+    # Manifest + error log presenti
+    assert (sub[0] / "manifest.json").exists()
+    assert (sub[0] / "error.log").exists()
+
+
+def test_handler_retries_succeed_eventually(tmp_path: Path) -> None:
+    """Se il pipeline crasha le prime volte e poi torna OK, niente DLQ."""
+    attempts: list[int] = []
+
+    def transient_pipeline(p: Path, _cfg: dict[str, Any], _state: Path) -> Any:
+        n = len(attempts) + 1
+        attempts.append(n)
+        if n < 2:
+            raise RuntimeError("transient")
+        return None
+
+    handler = InboxHandler(
+        config={},
+        state_dir=tmp_path / "state",
+        pipeline=transient_pipeline,
+        debounce_s=0.0,
+        max_retries=3,
+        retry_backoff_s=0.01,
+    )
+    f = tmp_path / "doc.txt"
+    f.write_text("x", encoding="utf-8")
+    handler.on_created(_RecorderEvent(str(f)))
+    assert attempts == [1, 2]
+    # Nessuna DLQ
+    assert not (tmp_path / "state" / "dead-letter").exists()
+
+
+def test_configure_logging_json_emits_json_line(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """configure_logging(json) deve produrre output JSON parsabile su stdout/stderr."""
+    import logging as _logging
+
+    from wiki.watcher import configure_logging
+
+    configure_logging("json", level=_logging.INFO)
+    logger_local = _logging.getLogger("wiki.watcher.test")
+    logger_local.info("hello", extra={"path": "/tmp/x"})
+    captured = capsys.readouterr()
+    # Almeno una riga JSON valida e contiene il campo `msg`/`path`.
+    lines = [line for line in (captured.err + captured.out).splitlines() if line.strip()]
+    assert lines, "Nessun log emesso"
+    parsed = None
+    for line in lines:
+        try:
+            parsed = json.loads(line)
+            if parsed.get("msg") == "hello":
+                break
+        except json.JSONDecodeError:
+            continue
+    assert parsed is not None, f"Nessuna riga JSON con msg='hello' trovata: {lines}"
+    assert parsed["level"] == "INFO"
+    assert parsed["path"] == "/tmp/x"
+
+    # Pulizia: reset del root logger per non disturbare altri test.
+    configure_logging("text", level=_logging.WARNING)
+
+
+def test_configure_logging_invalid_format_raises() -> None:
+    from wiki.watcher import configure_logging
+
+    with pytest.raises(ValueError):
+        configure_logging("xml")
 
 
 def test_start_watcher_end_to_end(tmp_path: Path) -> None:

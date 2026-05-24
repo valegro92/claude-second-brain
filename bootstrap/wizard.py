@@ -9,14 +9,14 @@ Tutto il modulo è progettato per essere testato sostituendo `input_fn` e
 `output_fn`: i test passano funzioni mock, in modo da non aver bisogno di un
 vero TTY.
 """
+
 from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +214,9 @@ def run_wizard(
         privacy=privacy,
     )
     out_fn("")
-    out_fn(f"Riepilogo: cliente='{answers.slug}', sorgenti={answers.sorgenti}, privacy={answers.privacy}")
+    out_fn(
+        f"Riepilogo: cliente='{answers.slug}', sorgenti={answers.sorgenti}, privacy={answers.privacy}"
+    )
     return answers
 
 

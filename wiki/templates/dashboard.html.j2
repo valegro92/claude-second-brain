@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Dashboard — {{ data.cliente }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* Stile minimal ispirato a Pico, tutto inline: niente CDN. */
+:root {
+  --fg: #1d1d1f;
+  --muted: #6b6b73;
+  --bg: #fdfdfd;
+  --card: #ffffff;
+  --border: #e3e3e8;
+  --accent: #1565c0;
+  --warn: #ef6c00;
+  --ok: #2e7d32;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 24px 16px; }
+header.page {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+header.page h1 { margin: 0 0 4px; font-size: 1.6rem; }
+header.page .meta { color: var(--muted); font-size: 0.9rem; }
+section.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+section.card h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+th { font-weight: 600; background: #f6f6f9; }
+td.num, th.num { text-align: right; }
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.metric {
+  background: #f8f8fb;
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+.metric .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.metric .value { font-size: 1.4rem; font-weight: 600; }
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  background: #eef0f5;
+  color: #333;
+  margin-right: 4px;
+}
+.chip.warn { background: #fff3e0; color: var(--warn); }
+.chip.ok { background: #e6f4ea; color: var(--ok); }
+ul.actions { padding-left: 18px; }
+ul.actions li { margin-bottom: 4px; }
+footer.page {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 32px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+details summary { cursor: pointer; color: var(--accent); }
+.empty { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="page">
+  <h1>Dashboard — {{ data.cliente }}</h1>
+  <div class="meta">
+    Generata: {{ data.generato_il.isoformat(timespec="seconds") }}
+    &middot; Costo Claude cumulativo: EUR {{ data.costi.totale_eur | eur }}
+    ({{ data.costi.n_chiamate }} chiamate)
+  </div>
+</header>
+
+<section class="card">
+  <h2>Sorgenti</h2>
+  {% if data.sources %}
+  <table>
+    <thead>
+      <tr>
+        <th>Sorgente</th>
+        <th class="num">Scoperti</th>
+        <th class="num">Perimetro</th>
+        <th class="num">Estratti</th>
+        <th class="num">Categorizzati</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in data.sources %}
+      <tr>
+        <td>{{ s.name }}</td>
+        <td class="num">{{ s.discovered }}</td>
+        <td class="num">{{ s.filtered_in_perimetro }}</td>
+        <td class="num">{{ s.extracted }}</td>
+        <td class="num">{{ s.categorized }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Nessuna sorgente scoperta. Lancia <code>wiki scan</code>.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Categorizzazione</h2>
+  {% if data.categorie.total > 0 %}
+  <div class="metric-grid">
+    {% for cat in categorie_lista %}
+    <div class="metric">
+      <div class="label">{{ cat }}</div>
+      <div class="value" style="color: {{ cat_colors[cat] }}">{{ data.categorie.counts[cat] }}</div>
+      <div class="meta">{{ data.categorie.percent(cat) | pct }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div style="margin-top: 12px;">
+    {{ chart_svg | safe }}
+  </div>
+  {% else %}
+  <p class="empty">Nessun file categorizzato (lancia <code>wiki categorize</code>).</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Bozze</h2>
+  <div class="metric-grid">
+    {% for stato in stati_bozza %}
+    <div class="metric">
+      <div class="label">{{ stato }}</div>
+      <div class="value">{{ data.bozze.counts[stato] }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <p>
+    Batch attivi: {{ data.bozze.batches | length }}
+    {% if data.bozze.batches %}
+    &middot;
+    {% for b in data.bozze.batches %}<span class="chip">{{ b }}</span>{% endfor %}
+    {% endif %}
+  </p>
+  {% if data.bozze.counts['pending'] > 0 %}
+  <p>Per approvare: <code>wiki approve --client {{ data.cliente }}</code></p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Salute vault</h2>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="label">File orfani</div>
+      <div class="value" style="color: {% if data.salute.file_orfani %}{{ '#ef6c00' }}{% else %}{{ '#2e7d32' }}{% endif %}">
+        {{ data.salute.file_orfani | length }}
+      </div>
+    </div>
+    <div class="metric">
+      <div class="label">Persone orfane</div>
+      <div class="value" style="color: {% if data.salute.persone_orfane %}{{ '#ef6c00' }}{% else %}{{ '#2e7d32' }}{% endif %}">
+        {{ data.salute.persone_orfane | length }}
+      </div>
+    </div>
+    <div class="metric">
+      <div class="label">Clienti dormienti</div>
+      <div class="value" style="color: {% if data.salute.clienti_dormienti %}{{ '#ef6c00' }}{% else %}{{ '#2e7d32' }}{% endif %}">
+        {{ data.salute.clienti_dormienti | length }}
+      </div>
+    </div>
+    <div class="metric">
+      <div class="label">Non conformi 01-PMI</div>
+      <div class="value" style="color: {% if data.salute.regola_01_pmi_mancanti %}{{ '#ef6c00' }}{% else %}{{ '#2e7d32' }}{% endif %}">
+        {{ data.salute.regola_01_pmi_mancanti | length }}
+      </div>
+    </div>
+  </div>
+
+  {% if data.salute.regola_01_pmi_mancanti %}
+  <details>
+    <summary>Dettaglio oggetti non conformi alla Regola 01-PMI ({{ data.salute.regola_01_pmi_mancanti | length }})</summary>
+    <table>
+      <thead><tr><th>Area</th><th>Oggetto</th><th>File mancanti</th></tr></thead>
+      <tbody>
+        {% for item in data.salute.regola_01_pmi_mancanti %}
+        <tr>
+          <td>{{ item.area }}</td>
+          <td>{{ item.oggetto }}</td>
+          <td>{{ item.mancanti | join(", ") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </details>
+  {% endif %}
+
+  {% if data.salute.clienti_dormienti %}
+  <details>
+    <summary>Clienti dormienti ({{ data.salute.clienti_dormienti | length }})</summary>
+    <ul>
+      {% for c in data.salute.clienti_dormienti %}
+      <li>{{ c }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+
+  {% if data.salute.file_orfani %}
+  <details>
+    <summary>File orfani ({{ data.salute.file_orfani | length }})</summary>
+    <ul>
+      {% for f in data.salute.file_orfani %}
+      <li><code>{{ f }}</code></li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Costi Claude</h2>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="label">Totale</div>
+      <div class="value">EUR {{ data.costi.totale_eur | eur }}</div>
+    </div>
+    <div class="metric">
+      <div class="label">Chiamate</div>
+      <div class="value">{{ data.costi.n_chiamate }}</div>
+    </div>
+  </div>
+  {% if data.costi.per_modello %}
+  <h3 style="font-size: 1rem; margin-bottom: 6px;">Per modello</h3>
+  <table>
+    <thead><tr><th>Modello</th><th class="num">EUR</th></tr></thead>
+    <tbody>
+      {% for m, v in data.costi.per_modello.items() | sort %}
+      <tr><td>{{ m }}</td><td class="num">{{ v | eur }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  {% if data.costi.per_stage %}
+  <h3 style="font-size: 1rem; margin-top: 12px; margin-bottom: 6px;">Per stage</h3>
+  <table>
+    <thead><tr><th>Stage</th><th class="num">EUR</th></tr></thead>
+    <tbody>
+      {% for st, v in data.costi.per_stage.items() | sort %}
+      <tr><td>{{ st }}</td><td class="num">{{ v | eur }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Prossime azioni</h2>
+  <ul class="actions">
+    {% for action in data.next_actions %}
+    <li>{{ action }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<footer class="page">
+  wiki-toolkit dashboard &middot; cliente <code>{{ data.cliente }}</code>
+</footer>
+
+</div>
+</body>
+</html>

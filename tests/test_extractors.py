@@ -3,6 +3,7 @@
 Le fixture generano i file di esempio al volo nella ``tmp_path`` di pytest:
 nessun binario di sistema (pandoc, tesseract) è richiesto per far girare i test.
 """
+
 from __future__ import annotations
 
 from email.message import EmailMessage
@@ -24,7 +25,6 @@ from extractors.pdf_ocr import PdfOcrExtractor
 from extractors.plain import PlainExtractor
 from extractors.xlsx import XlsxExtractor
 
-
 # ---------------------------------------------------------------------------
 # Fixture: generatori di file di esempio
 # ---------------------------------------------------------------------------
@@ -41,9 +41,7 @@ def sample_txt(tmp_path: Path) -> Path:
 def sample_csv(tmp_path: Path) -> Path:
     p = tmp_path / "clienti.csv"
     p.write_text(
-        "nome,settore,fatturato\n"
-        "Rossi Srl,edilizia,1200000\n"
-        "Bianchi Spa,manifattura,4500000\n",
+        "nome,settore,fatturato\nRossi Srl,edilizia,1200000\nBianchi Spa,manifattura,4500000\n",
         encoding="utf-8",
     )
     return p
@@ -235,6 +233,7 @@ def test_pdf_ocr_graceful_without_tesseract(sample_pdf_minimal: Path) -> None:
     # In CI/sandbox tesseract non c'è → quality 0 e warning chiaro.
     # Se invece tesseract è installato accettiamo qualunque risultato non crash.
     import shutil
+
     if shutil.which("tesseract") is None:
         assert res.quality == 0.0
         assert any("Tesseract" in w for w in res.warnings)

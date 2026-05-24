@@ -1,4 +1,5 @@
 """Extractor DOCX. Primario: pandoc (gfm). Fallback: python-docx."""
+
 from __future__ import annotations
 
 import logging
@@ -75,15 +76,17 @@ def _python_docx_fallback(file_path: Path, warnings: list[str]) -> ExtractionRes
         from docx.text.paragraph import Paragraph  # type: ignore[import-not-found]
     except ImportError:
         warnings.append("python-docx non installato: estrazione vuota")
-        return ExtractionResult(markdown="", metadata={"engine": "none"},
-                                warnings=warnings, quality=0.0)
+        return ExtractionResult(
+            markdown="", metadata={"engine": "none"}, warnings=warnings, quality=0.0
+        )
 
     try:
         doc = Document(str(file_path))
     except Exception as exc:
         warnings.append(f"python-docx non riesce ad aprire il file: {exc}")
-        return ExtractionResult(markdown="", metadata={"engine": "python-docx"},
-                                warnings=warnings, quality=0.0)
+        return ExtractionResult(
+            markdown="", metadata={"engine": "python-docx"}, warnings=warnings, quality=0.0
+        )
 
     parts: list[str] = []
     body = doc.element.body
@@ -132,9 +135,7 @@ def _table_to_md(table) -> str:
     """Tabella python-docx → markdown GFM."""
     rows = []
     for row in table.rows:
-        cells = [
-            cell.text.replace("|", "\\|").replace("\n", " ").strip() for cell in row.cells
-        ]
+        cells = [cell.text.replace("|", "\\|").replace("\n", " ").strip() for cell in row.cells]
         rows.append(cells)
     if not rows:
         return ""

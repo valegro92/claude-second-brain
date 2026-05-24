@@ -9,6 +9,7 @@ Comandi:
   * ``wiki approve`` — apre la batch UI (delega a ``batch_ui.cli``)
   * ``wiki watch`` — modalità sempre-in-ascolto sulla `_inbox/`
   * ``wiki status`` — riepilogo numerico (file/extracted/drafts/cost)
+  * ``wiki dashboard`` — genera ``_status/<slug>/dashboard.html`` + ``INDEX.md``
 
 Convenzioni:
   * Output sempre italiano, conciso, niente emoji.
@@ -16,13 +17,13 @@ Convenzioni:
   * `--client SLUG` selettiva: se assente e c'è un solo cliente in
     `bootstrap/clients/`, lo usa; se più di uno, errore esplicito.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import os
 import shutil
-import subprocess  # noqa: S404 - usato solo per chiamare i tool di sistema (pandoc/tesseract)
 import sys
 from collections import Counter
 from pathlib import Path
@@ -63,9 +64,7 @@ def _list_clients() -> list[str]:
     if not CLIENTS_DIR.exists():
         return []
     return sorted(
-        p.name
-        for p in CLIENTS_DIR.iterdir()
-        if p.is_dir() and (p / "config.yml").exists()
+        p.name for p in CLIENTS_DIR.iterdir() if p.is_dir() and (p / "config.yml").exists()
     )
 
 
@@ -249,19 +248,28 @@ def _build_active_scanners(
 @main.command()
 @click.option("--client", default=None, help="Slug cliente.")
 def extract(client: str | None) -> None:
-    """Estrae i file dell'inventory non ancora processati."""
+    """Estrae i file dell'inventory non ancora processati.
+
+    Il batch CLI usa direttamente il registry extractor invece di
+    ``run_pipeline_for_file`` (che fa dedup-skip sull'inventory: corretto per
+    il watcher, sbagliato qui dove i record sono GIA' nell'inventory dopo lo
+    scan). Skip solo se la cartella ``_status/extracted/<sha12>/`` esiste.
+    """
     slug = _resolve_client(client)
-    config = _load_config(slug)
+    _load_config(slug)  # validazione lettura config
     state_dir = _state_dir_for(slug)
     inv_dir = state_dir / "inventory"
     if not inv_dir.exists():
         click.echo("Nessun inventory. Lancia prima `wiki scan`.")
         return
 
-    from wiki.pipeline import run_pipeline_for_file
+    from extractors._base import Extractor
+    from extractors._registry import extractor_for_path
 
     n_done = 0
     n_skip = 0
+    n_no_extractor = 0
+    n_error = 0
     for jsonl in sorted(inv_dir.glob("*.jsonl")):
         for line in jsonl.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -278,12 +286,29 @@ def extract(client: str | None) -> None:
             if not p.exists():
                 n_skip += 1
                 continue
-            result = run_pipeline_for_file(p, config, state_dir)
-            if result.skipped:
+            sha = rec.get("sha256")
+            if sha and (state_dir / "extracted" / sha[:12]).exists():
                 n_skip += 1
-            else:
+                continue
+            extractor = extractor_for_path(p, mime=rec.get("mime"))
+            if extractor is None:
+                n_no_extractor += 1
+                continue
+            try:
+                result = extractor.extract(p)
+            except Exception as exc:  # pragma: no cover - difensivo
+                logger.warning("Estrazione fallita su %s: %s", p, exc)
+                n_error += 1
+                continue
+            if sha:
+                Extractor.write_extraction(result, state_dir, sha, source_record=rec)
                 n_done += 1
-    click.echo(f"Estrazione: {n_done} processati, {n_skip} skip.")
+            else:
+                n_skip += 1
+    click.echo(
+        f"Estrazione: {n_done} processati, {n_skip} skip, "
+        f"{n_no_extractor} senza extractor, {n_error} errori."
+    )
 
 
 # --- wiki categorize ------------------------------------------------------
@@ -340,6 +365,7 @@ def categorize(client: str | None) -> None:
 def reconcile(client: str | None) -> None:
     """Reconciler: dedup hash globale + dedup soft (naming pattern)."""
     slug = _resolve_client(client)
+    config = _load_config(slug)
     state_dir = _state_dir_for(slug)
     inv_dir = state_dir / "inventory"
     if not inv_dir.exists():
@@ -367,8 +393,26 @@ def reconcile(client: str | None) -> None:
     (out_dir / "by_hash.json").write_text(
         json.dumps(by_hash, indent=2, default=str), encoding="utf-8"
     )
-    click.echo(f"Reconciler: {n_dup_groups} gruppi di duplicati, {n_dup_files} file da deduplicare.")
+    click.echo(
+        f"Reconciler: {n_dup_groups} gruppi di duplicati, {n_dup_files} file da deduplicare."
+    )
     click.echo(f"Output: {out_dir.relative_to(REPO_ROOT)}/by_hash.json")
+
+    # Step 3: rigenerazione automatica dashboard se attiva nel config.
+    if (config.get("dashboard") or {}).get("auto"):
+        try:
+            from wiki.dashboard import generate_dashboard
+
+            vault_dir = REPO_ROOT / "vault"
+            generate_dashboard(
+                state_dir=state_dir,
+                vault_dir=vault_dir if vault_dir.exists() else None,
+                output_path=state_dir / "dashboard.html",
+                cliente=slug,
+            )
+            logger.info("Dashboard rigenerata automaticamente per %s", slug)
+        except Exception as exc:  # pragma: no cover - difensivo
+            logger.warning("Rigenerazione dashboard fallita: %s", exc)
 
 
 # --- wiki approve ---------------------------------------------------------
@@ -385,7 +429,7 @@ def approve(client: str | None) -> None:
     try:
         # Import lazy per non rompere il CLI se la batch UI ha dipendenze
         # opzionali non installate.
-        from batch_ui.cli import main as batch_main  # type: ignore
+        from batch_ui.cli import main as batch_main
     except ImportError as exc:
         raise click.ClickException(
             f"Modulo batch_ui.cli non disponibile: {exc}. "
@@ -400,7 +444,31 @@ def approve(client: str | None) -> None:
 @main.command()
 @click.option("--client", default=None, help="Slug cliente.")
 @click.option("--debounce", type=float, default=2.0, help="Secondi di debounce.")
-def watch(client: str | None, debounce: float) -> None:
+@click.option(
+    "--log-format",
+    type=click.Choice(["text", "json"], case_sensitive=False),
+    default="text",
+    help="Formato log: text (default) o json (per ingest in osservabilità).",
+)
+@click.option(
+    "--max-retries",
+    type=int,
+    default=3,
+    help="Tentativi totali sul pipeline prima di mandare il file in DLQ.",
+)
+@click.option(
+    "--retry-backoff",
+    type=float,
+    default=5.0,
+    help="Pausa (s) fra un tentativo e il successivo.",
+)
+def watch(
+    client: str | None,
+    debounce: float,
+    log_format: str,
+    max_retries: int,
+    retry_backoff: float,
+) -> None:
     """Modalità sempre-in-ascolto sulla `_inbox/<cliente>/`."""
     slug = _resolve_client(client)
     config = _load_config(slug)
@@ -416,6 +484,9 @@ def watch(client: str | None, debounce: float) -> None:
         state_dir=state_dir,
         debounce_s=debounce,
         block=True,
+        max_retries=max_retries,
+        retry_backoff_s=retry_backoff,
+        log_format=log_format,
     )
     click.echo("Watcher terminato.")
 
@@ -448,7 +519,9 @@ def status(client: str | None) -> None:
             click.echo(f"  {src}: {n} file")
 
     extracted_dir = state_dir / "extracted"
-    n_extracted = sum(1 for p in extracted_dir.iterdir() if p.is_dir()) if extracted_dir.exists() else 0
+    n_extracted = (
+        sum(1 for p in extracted_dir.iterdir() if p.is_dir()) if extracted_dir.exists() else 0
+    )
     click.echo(f"Estratti: {n_extracted}")
 
     drafts_dir = state_dir / "drafts"
@@ -495,6 +568,181 @@ def status(client: str | None) -> None:
             except (json.JSONDecodeError, ValueError):
                 continue
     click.echo(f"Costo Claude cumulativo: €{cumulative:.2f}")
+
+
+# --- wiki dashboard -------------------------------------------------------
+
+
+@main.command()
+@click.option("--client", default=None, help="Slug cliente.")
+@click.option(
+    "--open", "open_browser", is_flag=True, help="Apre la dashboard nel browser di default."
+)
+def dashboard(client: str | None, open_browser: bool) -> None:
+    """Genera ``_status/<slug>/dashboard.html`` + ``INDEX.md`` per il cliente."""
+    slug = _resolve_client(client)
+    state_dir = _state_dir_for(slug)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    vault_dir = REPO_ROOT / "vault"
+
+    from wiki.dashboard import generate_dashboard
+
+    out_html = state_dir / "dashboard.html"
+    paths = generate_dashboard(
+        state_dir=state_dir,
+        vault_dir=vault_dir if vault_dir.exists() else None,
+        output_path=out_html,
+        cliente=slug,
+    )
+    click.echo(f"Dashboard generata: {paths['html'].relative_to(REPO_ROOT)}")
+    click.echo(f"INDEX markdown: {paths['md'].relative_to(REPO_ROOT)}")
+
+    if open_browser:
+        import webbrowser
+
+        webbrowser.open(paths["html"].resolve().as_uri())
+
+
+# --- wiki doctor ----------------------------------------------------------
+
+
+@main.command()
+@click.option("--client", default=None, help="Slug cliente (opzionale per check globali).")
+@click.option("--strict", is_flag=True, help="Exit code 1 anche su warning (oltre fail).")
+def doctor(client: str | None, strict: bool) -> None:
+    """Health-check: Python, tool di sistema, env, config, cartelle, disco."""
+    from wiki.doctor import format_report, run_all_checks, summary_exit_code
+
+    # client e' opzionale qui: se passato, valida anche il suo config
+    slug = client
+    if slug:
+        try:
+            slug = _resolve_client(slug)
+        except click.ClickException:
+            click.echo(f"Cliente '{client}' non valido o inesistente.")
+            slug = None
+
+    checks = run_all_checks(REPO_ROOT, slug=slug)
+    click.echo(format_report(checks))
+    click.echo("")
+    n_ok = sum(1 for c in checks if c.stato == "ok")
+    n_warn = sum(1 for c in checks if c.stato == "warn")
+    n_fail = sum(1 for c in checks if c.stato == "fail")
+    click.echo(f"Totale: {n_ok} ok, {n_warn} warning, {n_fail} fail.")
+    exit_code = summary_exit_code(checks, strict=strict)
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+
+# --- wiki demo ------------------------------------------------------------
+
+
+@main.command()
+@click.option(
+    "--reset",
+    is_flag=True,
+    help="Cancella eventuale demo esistente prima di rigenerare.",
+)
+def demo(reset: bool) -> None:
+    """Demo end-to-end: genera dataset finto, lancia pipeline, apre dashboard.
+
+    Crea un cliente "demo" con 48 file misti (3 clienti finti + 2 fornitori),
+    esegue scan + extract + categorize + reconcile, genera la dashboard.
+    Utile per training, screen-recording, valutazione del prodotto.
+    """
+    slug = "demo"
+    client_dir = CLIENTS_DIR / slug
+    state_dir = _state_dir_for(slug)
+    inbox_dir = _inbox_dir_for(slug)
+
+    if reset:
+        for d in (client_dir, state_dir, inbox_dir):
+            if d.exists():
+                shutil.rmtree(d)
+        click.echo("Demo esistente cancellata.")
+
+    if client_dir.exists() and (client_dir / "config.yml").exists():
+        if not click.confirm(
+            "Demo gia' configurata. Sovrascrivere config e rigenerare dataset?", default=False
+        ):
+            click.echo("Annullato. Usa --reset per ricominciare da zero.")
+            return
+
+    # 1) Config demo (no API key necessaria — Claude e' mockabile, ma demo gira solo rules)
+    client_dir.mkdir(parents=True, exist_ok=True)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    inbox_dir.mkdir(parents=True, exist_ok=True)
+    demo_config = f"""\
+cliente:
+  slug: {slug}
+  nome: "Demo end-to-end"
+  custode: VG
+  owner: VG
+sorgenti:
+  nas:
+    enabled: true
+    mount: "{inbox_dir}"
+    perimetro: {{ include: [], exclude: [] }}
+  gdrive: {{ enabled: false }}
+  m365: {{ enabled: false }}
+  email: {{ enabled: false }}
+  server: {{ enabled: false }}
+filtri_globali:
+  max_file_mb: 50
+  exclude_extensions: [".dwg"]
+  exclude_paths_glob: []
+privacy:
+  modalita: safe
+  log_dati_a_anthropic: false
+batch:
+  size: 50
+  cost_alert_eur: 50
+  cost_hard_stop_eur: 200
+llm:
+  provider: anthropic_api
+  redact_pii: false
+dashboard:
+  auto: true
+"""
+    (client_dir / "config.yml").write_text(demo_config, encoding="utf-8")
+    click.echo(f"Config demo scritto: {(client_dir / 'config.yml').relative_to(REPO_ROOT)}")
+
+    # 2) Genera dataset
+    click.echo("Genero dataset finto (48 file)...")
+    try:
+        from tests.fixtures.build_pilot_dataset import build_dataset
+
+        build_dataset(inbox_dir)
+    except ImportError as exc:
+        click.echo(f"Errore: impossibile importare build_pilot_dataset ({exc})")
+        click.echo("Assicurati di aver installato dev deps: `uv sync --extra dev`")
+        sys.exit(2)
+
+    # 3) Pipeline completo invocando i comandi click programmaticamente
+    click.echo("")
+    click.echo("Pipeline:")
+    from click.testing import CliRunner
+
+    runner = CliRunner()
+    for cmd_name in ("scan", "extract", "categorize", "reconcile"):
+        click.echo(f"  > wiki {cmd_name} --client {slug}")
+        result = runner.invoke(main, [cmd_name, "--client", slug], catch_exceptions=False)
+        if result.exit_code != 0:
+            click.echo(f"    [!] {cmd_name} ha exit {result.exit_code}: {result.output[:200]}")
+            break
+
+    # 4) Dashboard
+    click.echo("")
+    click.echo("Genero dashboard...")
+    runner.invoke(main, ["dashboard", "--client", slug], catch_exceptions=False)
+    dash_path = state_dir / "dashboard.html"
+    if dash_path.exists():
+        click.echo(f"Dashboard: {dash_path.relative_to(REPO_ROOT)}")
+        click.echo("")
+        click.echo("Demo completa.")
+        click.echo("Per un cliente reale: `wiki init`")
+    else:
+        click.echo("Dashboard non generata (verifica errori sopra).")
 
 
 # --- entry point ----------------------------------------------------------

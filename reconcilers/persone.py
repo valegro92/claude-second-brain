@@ -19,16 +19,17 @@ Privacy:
     chiamare l'LLM e si limita a un rendering deterministico.
   * ``full``: gli output contengono liste complete email.
 """
+
 from __future__ import annotations
 
 import logging
 import re
 import unicodedata
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 from scanners._base import FileRecord
 
@@ -78,7 +79,9 @@ def _slug_dominio(domain: str) -> str:
     """``rossi-srl.it`` → ``rossi-srl``."""
     base = domain.lower().split(".")
     if len(base) >= 2:
-        normalized = unicodedata.normalize("NFKD", base[0]).encode("ascii", "ignore").decode("ascii")
+        normalized = (
+            unicodedata.normalize("NFKD", base[0]).encode("ascii", "ignore").decode("ascii")
+        )
         return re.sub(r"[^a-z0-9]+", "-", normalized).strip("-") or "dominio"
     normalized = unicodedata.normalize("NFKD", domain).encode("ascii", "ignore").decode("ascii")
     return re.sub(r"[^a-z0-9]+", "-", normalized).strip("-") or "dominio"
@@ -212,7 +215,7 @@ def _render_persone_cluster(
 ) -> str:
     """Markdown della bozza ``persone-<dominio>.md``."""
     slug = _slug_dominio(dominio)
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = datetime.now(UTC).date().isoformat()
     lines = [
         "---",
         "tipo: persone-oggetto",

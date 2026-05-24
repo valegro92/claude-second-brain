@@ -11,12 +11,13 @@ Comportamento:
 L'append al log e' best-effort: una scrittura singola e' atomica su filesystem
 POSIX per dimensioni ridotte come le nostre righe.
 """
+
 from __future__ import annotations
 
 import json
 import shutil
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -118,7 +119,9 @@ def flush_batch(
             rejected.append(payload)
         # PENDING e PARKED: skip senza log (resteranno per la prossima flush)
 
-    return FlushResult(applied=applied, rejected=rejected, skipped=skipped, decisions_log=decisions_log)
+    return FlushResult(
+        applied=applied, rejected=rejected, skipped=skipped, decisions_log=decisions_log
+    )
 
 
 def _apply_to_vault(
@@ -201,4 +204,4 @@ def _append_decision(log_path: Path, payload: dict[str, Any]) -> None:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()

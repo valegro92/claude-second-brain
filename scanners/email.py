@@ -5,6 +5,7 @@ JSON con la lista di messaggi. I file ``.eml`` vengono parsati con lo
 ``email`` stdlib; ogni allegato viene emesso come :class:`FileRecord` separato
 con ``source="email-attachment"``.
 """
+
 from __future__ import annotations
 
 import email
@@ -12,11 +13,12 @@ import json
 import logging
 import mimetypes
 import re
+from collections.abc import Iterator
 from datetime import datetime
 from email.message import Message
 from email.utils import parseaddr, parsedate_to_datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from scanners._base import FileRecord, Scanner
 
@@ -111,7 +113,9 @@ def _has_attachments(msg: Message) -> bool:
     return any(part.get_filename() for part in msg.walk())
 
 
-def _records_from_attachments(msg: Message, parent_id: str, mtime: datetime) -> Iterator[FileRecord]:
+def _records_from_attachments(
+    msg: Message, parent_id: str, mtime: datetime
+) -> Iterator[FileRecord]:
     """Un :class:`FileRecord` per ogni allegato, ``source="email-attachment"``."""
     if not msg.is_multipart():
         return
@@ -158,9 +162,7 @@ class EmailScanner(Scanner):
         self.accounts: list[str] = list(sorgente.get("accounts", []))
         self.folders: list[str] = list(sorgente.get("folders", []))
         self.mock_data_path: str | None = sorgente.get("mock_data_path")
-        self.skip_short_no_attachments: bool = bool(
-            sorgente.get("skip_short_no_attachments", True)
-        )
+        self.skip_short_no_attachments: bool = bool(sorgente.get("skip_short_no_attachments", True))
         self.min_body_chars: int = int(sorgente.get("min_body_chars", 500))
 
     # ------------------------------------------------------------ modalità mock

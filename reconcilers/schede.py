@@ -18,21 +18,22 @@ Algoritmo:
 Niente auto-flush sul vault: la cartella ``_status/drafts/...`` resta in
 mano alla batch UI per l'approvazione manuale.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
 import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
-
-from scanners._base import FileRecord
+from typing import Any
 
 from categorizers._enums import Categoria
 from categorizers.claude import _estimate_cost_eur, _extract_text, _extract_usage, _log_cost
+from scanners._base import FileRecord
 
 logger = logging.getLogger(__name__)
 
@@ -187,8 +188,10 @@ def group_records(records: Iterable[FileRecord]) -> list[ObjectGroup]:
 
         # Segnale 3: prefisso nel nome file (``rossi-srl_offerta_*``).
         stem = r.name.split(".", 1)[0]
-        m = re.match(r"^([a-z0-9]+(?:[-_][a-z0-9]+)*)[_-](?:offerta|ordine|contratto|fattura|capitolato|preventivo)",
-                     stem.lower())
+        m = re.match(
+            r"^([a-z0-9]+(?:[-_][a-z0-9]+)*)[_-](?:offerta|ordine|contratto|fattura|capitolato|preventivo)",
+            stem.lower(),
+        )
         if m:
             slug = slugify(m.group(1).replace("_", "-"))
             tipo = _detect_tipo_from_path(r.path) or "cliente"
@@ -253,25 +256,26 @@ def _call_narrative(
     state_dir: Path,
     model: str,
     client: Any | None,
+    config: dict[str, Any] | None = None,
 ) -> str:
     """Chiama Claude Sonnet per generare la sezione Storia + Decisioni.
 
     Restituisce sempre un markdown (vuoto se la call fallisce, mai eccezione
     propagata: la bozza viene comunque generata con placeholder).
+
+    Step 3: il client è ottenuto via :func:`wiki.llm.get_llm_client`, che
+    sceglie il backend (anthropic_api standard o bedrock) in base al
+    ``config`` del cliente.
     """
     if client is None:
+        # Import locale per evitare import circolari (wiki/llm dipende da
+        # categorizers/_enums in trasparenza via futuri test).
+        from wiki.llm import get_llm_client
+
         try:
-            import anthropic  # type: ignore
-
-            import os
-
-            api_key = os.environ.get("ANTHROPIC_API_KEY")
-            if not api_key:
-                logger.warning("ANTHROPIC_API_KEY mancante, niente sezione narrativa")
-                return _narrative_placeholder()
-            client = anthropic.Anthropic(api_key=api_key)
-        except ImportError:
-            logger.warning("anthropic SDK non installato, niente sezione narrativa")
+            client = get_llm_client(config or {}, state_dir=state_dir)
+        except RuntimeError as exc:
+            logger.warning("LLM non disponibile (%s), niente sezione narrativa", exc)
             return _narrative_placeholder()
 
     user_prompt = _build_narrative_prompt(group, state_dir)
@@ -293,7 +297,7 @@ def _call_narrative(
         _log_cost(
             state_dir,
             {
-                "ts": datetime.now(timezone.utc).isoformat(),
+                "ts": datetime.now(UTC).isoformat(),
                 "stage": "scheda-narrativa",
                 "model": model,
                 "tokens_in": tokens_in,
@@ -318,7 +322,7 @@ def _narrative_placeholder() -> str:
 # ------------------------------------------------------------ rendering
 def _frontmatter(tipo_scheda: str, slug: str, group: ObjectGroup) -> str:
     """Frontmatter YAML standard per le bozze."""
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = datetime.now(UTC).date().isoformat()
     lines = [
         "---",
         f"tipo: {tipo_scheda}",
@@ -530,6 +534,7 @@ def run_schede(
     model: str = DEFAULT_NARRATIVE_MODEL,
     client: Any | None = None,
     call_llm: bool = True,
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Esegue il reconciler schede.
 
@@ -537,9 +542,11 @@ def run_schede(
         state_dir: cartella ``_status/``.
         batch_id: identificativo del batch (es. ``2026-05-23-001``).
         model: modello Sonnet per la sezione narrativa.
-        client: client Anthropic preconfezionato (per test).
+        client: client LLM preconfezionato (per test). Se ``None``, viene
+            costruito via :func:`wiki.llm.get_llm_client` dal ``config``.
         call_llm: se False, salta la chiamata LLM e usa solo placeholder
             (utile in test E2E e per dry-run).
+        config: config cliente (per scelta provider LLM in Step 3).
 
     Returns:
         Dict con statistiche: ``{n_groups, slugs}``.
@@ -567,7 +574,7 @@ def run_schede(
     written_slugs: list[str] = []
     for group in groups:
         if call_llm:
-            narrative = _call_narrative(group, state_dir, model, client)
+            narrative = _call_narrative(group, state_dir, model, client, config=config)
         else:
             narrative = _narrative_placeholder()
         out_dir = drafts_root / f"scheda-{group.tipo}-{group.slug}"

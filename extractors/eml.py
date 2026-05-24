@@ -1,4 +1,5 @@
 """Extractor per email RFC 822 (.eml). stdlib email + markdownify."""
+
 from __future__ import annotations
 
 import logging
@@ -74,6 +75,7 @@ class EmlExtractor(Extractor):
 
 def _extract_headers(msg) -> dict[str, Any]:
     """Header rilevanti normalizzati."""
+
     def addr_list(value):
         if not value:
             return []
@@ -104,11 +106,13 @@ def _list_attachments(msg) -> list[dict[str, Any]]:
         filename = part.get_filename()
         if disp == "attachment" or (filename and disp != "inline"):
             payload = part.get_payload(decode=True) or b""
-            out.append({
-                "filename": filename or "(senza nome)",
-                "content_type": part.get_content_type(),
-                "size": len(payload),
-            })
+            out.append(
+                {
+                    "filename": filename or "(senza nome)",
+                    "content_type": part.get_content_type(),
+                    "size": len(payload),
+                }
+            )
     return out
 
 
@@ -130,7 +134,11 @@ def _extract_body(msg) -> tuple[str, list[str], bool, str | None]:
         if getattr(part, "is_multipart", lambda: False)():
             continue
         ctype = part.get_content_type() if hasattr(part, "get_content_type") else ""
-        disp = (part.get_content_disposition() or "").lower() if hasattr(part, "get_content_disposition") else ""
+        disp = (
+            (part.get_content_disposition() or "").lower()
+            if hasattr(part, "get_content_disposition")
+            else ""
+        )
         if disp == "attachment":
             continue
         if ctype == "text/plain" and plain is None:
@@ -152,6 +160,7 @@ def _extract_body(msg) -> tuple[str, list[str], bool, str | None]:
     elif html:
         try:
             from markdownify import markdownify as md
+
             body_md = md(html, heading_style="ATX")
             full_body = body_md
         except ImportError:

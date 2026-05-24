@@ -1,9 +1,10 @@
 """Base class e schema per gli extractor. Interfaccia stabile."""
+
 from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +45,11 @@ class Extractor(ABC):
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "main.md").write_text(result.markdown, encoding="utf-8")
         (out_dir / "meta.json").write_text(
-            json.dumps({"metadata": result.metadata, "quality": result.quality}, ensure_ascii=False, indent=2),
+            json.dumps(
+                {"metadata": result.metadata, "quality": result.quality},
+                ensure_ascii=False,
+                indent=2,
+            ),
             encoding="utf-8",
         )
         (out_dir / "source.json").write_text(

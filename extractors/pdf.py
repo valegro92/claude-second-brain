@@ -1,4 +1,5 @@
 """Extractor per PDF testuali. Primario: pdfplumber. Fallback: pypdf."""
+
 from __future__ import annotations
 
 import logging
@@ -50,7 +51,11 @@ class PdfExtractor(Extractor):
         quality = _quality(total_chars, n_pages)
         metadata = {"pages": n_pages, "chars": total_chars, "engine": "pdfplumber"}
 
-        if quality < 0.5 and n_pages > _MIN_PAGES_FOR_OCR_FLAG and total_chars < _MIN_CHARS_FOR_TEXT:
+        if (
+            quality < 0.5
+            and n_pages > _MIN_PAGES_FOR_OCR_FLAG
+            and total_chars < _MIN_CHARS_FOR_TEXT
+        ):
             metadata["needs_ocr"] = True
             warnings.append(
                 f"Testo estratto scarso ({total_chars} char su {n_pages} pagine): "
@@ -90,8 +95,14 @@ def _render_page(page, idx: int, warnings: list[str]) -> str:
 
 def _table_to_markdown(table: list[list]) -> str:
     """Tabella `list[list[str|None]]` → markdown GFM."""
-    rows = [[("" if cell is None else str(cell)).replace("|", "\\|").replace("\n", " ").strip()
-             for cell in row] for row in table if row]
+    rows = [
+        [
+            ("" if cell is None else str(cell)).replace("|", "\\|").replace("\n", " ").strip()
+            for cell in row
+        ]
+        for row in table
+        if row
+    ]
     if not rows:
         return ""
     width = max(len(r) for r in rows)
@@ -118,14 +129,16 @@ def _extract_pypdf(file_path: Path, warnings: list[str]) -> ExtractionResult:
         from pypdf import PdfReader
     except ImportError:  # pragma: no cover
         warnings.append("Né pdfplumber né pypdf disponibili: estrazione vuota")
-        return ExtractionResult(markdown="", metadata={"engine": "none"},
-                                warnings=warnings, quality=0.0)
+        return ExtractionResult(
+            markdown="", metadata={"engine": "none"}, warnings=warnings, quality=0.0
+        )
     try:
         reader = PdfReader(str(file_path))
     except Exception as exc:
         warnings.append(f"pypdf non riesce ad aprire il file: {exc}")
-        return ExtractionResult(markdown="", metadata={"engine": "pypdf"},
-                                warnings=warnings, quality=0.0)
+        return ExtractionResult(
+            markdown="", metadata={"engine": "pypdf"}, warnings=warnings, quality=0.0
+        )
 
     sections = []
     total_chars = 0

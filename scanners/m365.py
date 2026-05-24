@@ -9,13 +9,15 @@ Le chiamate reali sono volutamente uno stub minimale: l'integrazione completa
 (delta queries, multi-site) è tracciata nel brief sezione 2.2 ed entrerà nello
 sprint dedicato.
 """
+
 from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Iterable, Iterator
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 from scanners._base import FileRecord, Scanner
 
@@ -92,8 +94,8 @@ class M365Scanner(Scanner):
                 "Credenziali M365 mancanti: imposta tenant_id/client_id/client_secret "
                 "in sorgenti.m365"
             )
-        from azure.identity import ClientSecretCredential  # type: ignore
-        from msgraph import GraphServiceClient  # type: ignore
+        from azure.identity import ClientSecretCredential
+        from msgraph import GraphServiceClient
 
         credential = ClientSecretCredential(
             tenant_id=self.tenant_id,

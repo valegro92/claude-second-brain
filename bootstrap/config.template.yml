@@ -87,6 +87,35 @@ privacy:
   modalita: __PRIVACY__                    # safe | full
   log_dati_a_anthropic: true               # se false, disabilita anche la passata 2 del categorizer
   redact_pii: false                        # maschera email/CF/IBAN/telefono prima di Claude
+                                           # (alias retro-compat: vedi llm.redact_pii)
+
+# --- Sezione: llm ---------------------------------------------------------
+# Step 3 — modalità on-premise. Scelta del backend LLM:
+#   - anthropic_api: SDK Anthropic standard (default, identico a Step 2).
+#                    Richiede ANTHROPIC_API_KEY nell'ambiente.
+#   - bedrock:       Claude su AWS Bedrock dell'account cliente. Richiede
+#                    credenziali AWS standard (env / profile / IAM role) e
+#                    i modelli abilitati nella region indicata.
+# Vedi `docs/08-on-premise.md` per quando usare cosa.
+llm:
+  provider: anthropic_api                  # anthropic_api | bedrock
+
+  # Se true, wrappa il client in safe-mode: PII (email, CF, IBAN, telefono)
+  # mascherate prima di ogni call e ri-espanse dopo. Mappa redact persistita
+  # in `_status/audit/redact-map.json` (mai inviata al modello).
+  redact_pii: false
+
+  # Override opzionali del provider standard.
+  anthropic_api:
+    model_overrides: {}                    # es. {fast: "claude-haiku-4-5", smart: "claude-sonnet-4-5"}
+
+  # Configurazione richiesta solo se provider = bedrock.
+  bedrock:
+    region: eu-west-1                      # AWS region (data residency)
+    aws_profile: default                   # profilo AWS della catena credenziali
+    model_overrides:
+      fast: anthropic.claude-haiku-4-5-20251001-v1:0
+      smart: anthropic.claude-sonnet-4-5-20251022-v2:0
 
 # --- Sezione: batch + costi ----------------------------------------------
 batch:

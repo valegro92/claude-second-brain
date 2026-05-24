@@ -8,14 +8,14 @@ fra i ``DA_CHIARIRE`` da passare a Claude.
 
 Le soglie restano costanti modulo e sono importate dal pipeline.
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Iterable
-
-from scanners._base import FileRecord
+from collections.abc import Iterable
+from datetime import UTC, datetime
 
 from categorizers._enums import Categoria
+from scanners._base import FileRecord
 
 # ----------------------------------------------------------------- soglie
 # Cutoff confidence per dire "regola sicura, niente Claude".
@@ -45,10 +45,16 @@ _ARCHIVE_PATH_TOKENS: tuple[str, ...] = (
     "vecchio",
     "vecchi",
     "old/",
+    "_old",
+    "_old_",
     "/backup",
     "_backup",
+    "backup_2",  # Backup_2022/, Backup_2021/
     "storico",
     "obsoleto",
+    "non_usare",
+    "non usare",
+    "_da_eliminare",
 )
 
 # Token di path che gridano "roba viva, operativa".
@@ -60,19 +66,83 @@ _LIVE_PATH_TOKENS: tuple[str, ...] = (
     "/wip",
     "/vivi",
     "/commerciale",
+    # Pattern italiani PMI: cartelle operative ricorrenti
+    "/clienti/",
+    "/fornitori/",
+    "/offerte/",
+    "/ordini/",
+    "/fatture/",
+    "/ddt/",
+    "/comunicazioni/",
+    "/preventivi/",
+    "/commesse/",
+    "/progetti/",
+)
+
+# Token di path che indicano riferimenti permanenti (DA_CONSULTARE).
+_CONSULT_PATH_TOKENS: tuple[str, ...] = (
+    "/contratti/",
+    "/listini/",
+    "/manuali/",
+    "/modelli/",
+    "/templates/",
+    "/documenti/",
+    "/normativa/",
+    "/normative/",
+    "/policies/",
+    "/policy/",
+    "/procedure/",
+    "/riferimenti/",
+    "/references/",
+    "/anagrafica/",
+    "/anagrafiche/",
+)
+
+# Pattern naming italiano "documento di business" (forte segnale che NON e' rumore).
+# Combinato con eta' recente -> VIVO, eta' vecchia -> ARCHIVIO.
+_BUSINESS_NAME_TOKENS: tuple[str, ...] = (
+    "fattura",
+    "fatture",
+    "fattura_",
+    "ddt",
+    "ddt_",
+    "offerta",
+    "offerta_",
+    "preventivo",
+    "preventivo_",
+    "conferma_ordine",
+    "conferma-ordine",
+    "ordine_",
+    "contratto",
+    "contratto_",
+    "listino",
+    "listino_",
+    "manuale",
+    "manuale_",
+    "anagrafica",
+    "anagrafica_",
+    "contatti",
+    "scheda_cliente",
+    "scheda_fornitore",
+    "riepilogo",
+    "report",
+    "relazione",
+    "comunicazione",
+    "perizia",
+    "verbale",
 )
 
 
 def _now() -> datetime:
     """Wrappa ``datetime.now`` per essere mockabile nei test."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _age_days(mtime: datetime) -> int:
     """Età del file in giorni, robusta a mtime naive/aware."""
     now = _now()
     if mtime.tzinfo is None:
-        mtime = mtime.replace(tzinfo=timezone.utc)
+        mtime = mtime.replace(tzinfo=UTC)
     delta = now - mtime
     return max(delta.days, 0)
 
@@ -89,7 +159,7 @@ def score(record: FileRecord) -> dict[Categoria, float]:
     Tutti i segnali sono additivi e poi clampati, in modo che l'aggiunta di
     una nuova regola non possa "esplodere" oltre 1.
     """
-    scores: dict[Categoria, float] = {c: 0.0 for c in Categoria}
+    scores: dict[Categoria, float] = dict.fromkeys(Categoria, 0.0)
 
     # --- segnale 1: età ---------------------------------------------------
     age = _age_days(record.mtime)
@@ -117,10 +187,23 @@ def score(record: FileRecord) -> dict[Categoria, float]:
     if any(tok in path_lower for tok in _ARCHIVE_PATH_TOKENS):
         _bump(scores, Categoria.ARCHIVIO, 0.7)
     if any(tok in path_lower for tok in _LIVE_PATH_TOKENS):
-        _bump(scores, Categoria.VIVO, 0.3)
+        _bump(scores, Categoria.VIVO, 0.4)
+    if any(tok in path_lower for tok in _CONSULT_PATH_TOKENS):
+        _bump(scores, Categoria.DA_CONSULTARE, 0.5)
     # Cestino vero e proprio: segnale fortissimo.
     if "/cestino" in path_lower or path_lower.startswith("cestino/") or "/trash" in path_lower:
         _bump(scores, Categoria.CESTINO, 0.9)
+
+    # --- segnale 5: naming business italiano + eta' ----------------------
+    # Documenti di business con nome riconoscibile rinforzano la categoria
+    # gia' suggerita dall'eta' (no override, solo bump per uscire dal DA_CHIARIRE).
+    if any(tok in name_lower for tok in _BUSINESS_NAME_TOKENS):
+        if age < 365:
+            _bump(scores, Categoria.VIVO, 0.3)
+        elif age < 1095:
+            _bump(scores, Categoria.DA_CONSULTARE, 0.3)
+        else:
+            _bump(scores, Categoria.ARCHIVIO, 0.3)
 
     # --- segnale 4: dimensione anomala -----------------------------------
     # File zero-byte: quasi sempre placeholder o residui.

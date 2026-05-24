@@ -10,13 +10,15 @@ Due modalità:
 
 Output: ``_status/inventory/gdrive.jsonl`` (formato uniforme :class:`FileRecord`).
 """
+
 from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Iterable, Iterator
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 from scanners._base import FileRecord, Scanner
 

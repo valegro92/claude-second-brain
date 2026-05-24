@@ -11,12 +11,14 @@ Priorità di sorgente per scegliere il canonical (più alto vince):
 ``gdrive > m365 > nas > email-attachment > server > email``. A parità
 di sorgente vince ``mtime`` più recente.
 """
+
 from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from scanners._base import FileRecord
 

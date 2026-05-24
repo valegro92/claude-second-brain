@@ -2,6 +2,7 @@
 
 Pacchetto Flask + HTMX + Pico.css. Single-user, ascolta su 127.0.0.1.
 """
+
 from __future__ import annotations
 
 from .server import create_app
