@@ -710,9 +710,9 @@ dashboard:
     # 2) Genera dataset
     click.echo("Genero dataset finto (48 file)...")
     try:
-        from tests.fixtures.build_pilot_dataset import build_pilot_dataset
+        from tests.fixtures.build_pilot_dataset import build_dataset
 
-        build_pilot_dataset(inbox_dir)
+        build_dataset(inbox_dir)
     except ImportError as exc:
         click.echo(f"Errore: impossibile importare build_pilot_dataset ({exc})")
         click.echo("Assicurati di aver installato dev deps: `uv sync --extra dev`")
