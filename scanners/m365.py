@@ -94,8 +94,8 @@ class M365Scanner(Scanner):
                 "Credenziali M365 mancanti: imposta tenant_id/client_id/client_secret "
                 "in sorgenti.m365"
             )
-        from azure.identity import ClientSecretCredential  # type: ignore
-        from msgraph import GraphServiceClient  # type: ignore
+        from azure.identity import ClientSecretCredential
+        from msgraph import GraphServiceClient
 
         credential = ClientSecretCredential(
             tenant_id=self.tenant_id,

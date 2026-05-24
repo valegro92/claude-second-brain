@@ -61,7 +61,7 @@ class AnthropicApiClient(AnthropicCompatibleMixin, LLMClient):
             return
 
         try:
-            import anthropic  # type: ignore[import-not-found]
+            import anthropic
         except ImportError as exc:  # pragma: no cover - dipende dall'install
             raise RuntimeError(
                 "Il pacchetto `anthropic` non è installato. Aggiungilo via uv."

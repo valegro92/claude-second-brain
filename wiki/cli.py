@@ -429,7 +429,7 @@ def approve(client: str | None) -> None:
     try:
         # Import lazy per non rompere il CLI se la batch UI ha dipendenze
         # opzionali non installate.
-        from batch_ui.cli import main as batch_main  # type: ignore
+        from batch_ui.cli import main as batch_main
     except ImportError as exc:
         raise click.ClickException(
             f"Modulo batch_ui.cli non disponibile: {exc}. "
