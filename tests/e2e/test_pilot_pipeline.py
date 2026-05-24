@@ -16,6 +16,7 @@ fanno fallback). Richiede solo le librerie già in deps (python-docx, openpyxl,
 pdfplumber/pypdf, watchdog). I PDF "ricchi" arrivano da reportlab se
 disponibile, altrimenti dal minimal-PDF cucito a mano.
 """
+
 from __future__ import annotations
 
 import json
@@ -31,7 +32,6 @@ from click.testing import CliRunner
 from tests.fixtures.build_pilot_dataset import build_dataset
 from wiki import cli as cli_module
 from wiki.cli import main as wiki_main
-
 
 # --- helper: client config -------------------------------------------------
 
@@ -85,9 +85,7 @@ def _make_pilot_config(repo_root: Path, dataset_root: Path, slug: str = PILOT_SL
 
 
 @pytest.fixture
-def isolated_pilot_repo(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> tuple[Path, Path, Path]:
+def isolated_pilot_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path, Path]:
     """Setup completo: redirige le costanti del CLI + genera il dataset.
 
     Ritorna ``(repo_root, dataset_root, state_dir_slug)``.
@@ -254,9 +252,9 @@ def test_pilot_pipeline_end_to_end(isolated_pilot_repo: tuple[Path, Path, Path])
     assert cat_sum == summary["total"]
     # La cartella _OLD_NON_USARE/ ha file 2018: dovrebbero finire in ARCHIVIO
     # o CESTINO (le 2 categorie "non-vive").
-    archivio_o_cestino = summary["by_category"].get("archivio", 0) + summary[
-        "by_category"
-    ].get("cestino", 0)
+    archivio_o_cestino = summary["by_category"].get("archivio", 0) + summary["by_category"].get(
+        "cestino", 0
+    )
     assert archivio_o_cestino > 0, (
         "I file vecchi (_OLD_NON_USARE / 2018) dovevano finire in archivio/cestino"
     )
@@ -299,11 +297,11 @@ def test_pilot_pipeline_end_to_end(isolated_pilot_repo: tuple[Path, Path, Path])
     assert len(soft_drafts) == soft_stats["n_clusters"]
 
     # Schede: con cliente mockato non si fanno chiamate reali.
-    with patch("reconcilers.schede._call_narrative",
-               return_value="## Storia\n\n- evento.\n\n## Decisioni estratte\n\n- nessuna.\n"):
-        schede_stats = run_schede(
-            state_dir_slug, batch_id, client=fake_client, call_llm=True
-        )
+    with patch(
+        "reconcilers.schede._call_narrative",
+        return_value="## Storia\n\n- evento.\n\n## Decisioni estratte\n\n- nessuna.\n",
+    ):
+        schede_stats = run_schede(state_dir_slug, batch_id, client=fake_client, call_llm=True)
     # Almeno 2 bozze scheda cliente (Rossi, Verdi, Bianchi → folder /clienti/<slug>/).
     assert schede_stats["n_groups"] >= 2, (
         f"Atteso almeno 2 bozze scheda, trovate {schede_stats['n_groups']}"
@@ -370,9 +368,7 @@ def test_categorizer_claude_mocked(isolated_pilot_repo: tuple[Path, Path, Path])
         if line.strip()
     ][:5]  # bastano 5 record per il test
     fake_client = _FakeAnthropicClient()
-    results = categorize_batch(
-        records, mode="safe", state_dir=state_dir_slug, client=fake_client
-    )
+    results = categorize_batch(records, mode="safe", state_dir=state_dir_slug, client=fake_client)
     assert len(results) == len(records)
     # Tutti VIVO secondo il fake.
     assert all(r["cat"] == "vivo" for r in results)
@@ -446,9 +442,7 @@ def _apply_categories_to_inventory(state_dir_slug: Path) -> None:
         tmp.replace(jsonl)
 
 
-def _apply_claude_categories(
-    state_dir_slug: Path, fake_client: "_FakeAnthropicClient"
-) -> None:
+def _apply_claude_categories(state_dir_slug: Path, fake_client: _FakeAnthropicClient) -> None:
     """Per i record ``DA_CHIARIRE`` chiama il categorizer Claude (mock-ato).
 
     Aggiorna i JSONL in-place: ``categoria`` diventa quella decisa dal mock

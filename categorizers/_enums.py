@@ -1,4 +1,5 @@
 """Enum condivisi tra categorizer, reconciler, batch UI, watcher."""
+
 from __future__ import annotations
 
 from enum import Enum

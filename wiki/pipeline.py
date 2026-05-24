@@ -12,6 +12,7 @@ presenza di:
 
 Niente db: tutto su filesystem, in modo che il watcher possa girare senza setup.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -19,16 +20,15 @@ import json
 import logging
 import mimetypes
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from categorizers._enums import Categoria
 from extractors._base import ExtractionResult, Extractor
 from extractors.pdf import PdfExtractor
 from extractors.plain import PlainExtractor
 from scanners._base import FileRecord
-
-from categorizers._enums import Categoria
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ def _build_record_from_inbox(file_path: Path) -> FileRecord:
         path=file_path.name,
         name=file_path.name,
         size=st.st_size,
-        mtime=datetime.fromtimestamp(st.st_mtime, tz=timezone.utc),
+        mtime=datetime.fromtimestamp(st.st_mtime, tz=UTC),
         mime=mime,
         author=None,
         last_modified_by=None,
@@ -146,7 +146,7 @@ def _current_batch_id(state_dir: Path) -> str:
     """Calcola l'ID del batch corrente: directory mtime più recente o nuovo."""
     drafts_dir = state_dir / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
-    today = datetime.now(timezone.utc).strftime("%Y%m%d")
+    today = datetime.now(UTC).strftime("%Y%m%d")
     return today  # un batch al giorno è sufficiente per Step 2 watcher
 
 
@@ -223,7 +223,7 @@ def run_pipeline_for_file(
                 path=str(file_path),
                 name=file_path.name,
                 size=0,
-                mtime=datetime.now(timezone.utc),
+                mtime=datetime.now(UTC),
             ),
             categoria=None,
             confidence=0.0,
@@ -241,8 +241,12 @@ def run_pipeline_for_file(
         logger.warning("Impossibile costruire record per %s: %s", file_path, exc)
         return PipelineResult(
             record=FileRecord(
-                source="inbox", source_id=str(file_path), path=str(file_path),
-                name=file_path.name, size=0, mtime=datetime.now(timezone.utc),
+                source="inbox",
+                source_id=str(file_path),
+                path=str(file_path),
+                name=file_path.name,
+                size=0,
+                mtime=datetime.now(UTC),
             ),
             categoria=None,
             confidence=0.0,
@@ -258,16 +262,26 @@ def run_pipeline_for_file(
     if sha and sha in known:
         logger.info("Skip %s: sha già in inventory", file_path.name)
         return PipelineResult(
-            record=record, categoria=None, confidence=0.0,
-            reason="dedup-hash", extraction_dir=None, draft_path=None,
-            skipped=True, skip_reason="already-in-inventory",
+            record=record,
+            categoria=None,
+            confidence=0.0,
+            reason="dedup-hash",
+            extraction_dir=None,
+            draft_path=None,
+            skipped=True,
+            skip_reason="already-in-inventory",
         )
     if sha and _already_extracted(state_dir, sha):
         logger.info("Skip %s: cartella estrazione già esistente", file_path.name)
         return PipelineResult(
-            record=record, categoria=None, confidence=0.0,
-            reason="already-extracted", extraction_dir=state_dir / "extracted" / sha[:12],
-            draft_path=None, skipped=True, skip_reason="already-extracted",
+            record=record,
+            categoria=None,
+            confidence=0.0,
+            reason="already-extracted",
+            extraction_dir=state_dir / "extracted" / sha[:12],
+            draft_path=None,
+            skipped=True,
+            skip_reason="already-extracted",
         )
 
     # Scrive il record nell'inventory "inbox.jsonl" (append-only)
@@ -282,22 +296,35 @@ def run_pipeline_for_file(
     if extractor is None:
         logger.info("Skip %s: nessun extractor disponibile", file_path.name)
         return PipelineResult(
-            record=record, categoria=None, confidence=0.0,
-            reason="no-extractor", extraction_dir=None, draft_path=None,
-            skipped=True, skip_reason="no-extractor",
+            record=record,
+            categoria=None,
+            confidence=0.0,
+            reason="no-extractor",
+            extraction_dir=None,
+            draft_path=None,
+            skipped=True,
+            skip_reason="no-extractor",
         )
     try:
         extraction = extractor.extract(file_path)
     except Exception as exc:  # pragma: no cover - difensivo
         logger.exception("Estrazione fallita su %s: %s", file_path, exc)
         return PipelineResult(
-            record=record, categoria=None, confidence=0.0,
-            reason=f"extractor-error: {exc}", extraction_dir=None, draft_path=None,
-            skipped=True, skip_reason="extractor-error",
+            record=record,
+            categoria=None,
+            confidence=0.0,
+            reason=f"extractor-error: {exc}",
+            extraction_dir=None,
+            draft_path=None,
+            skipped=True,
+            skip_reason="extractor-error",
         )
 
     extraction_dir = Extractor.write_extraction(
-        extraction, state_dir, sha, source_record=json.loads(record.to_jsonl()),
+        extraction,
+        state_dir,
+        sha,
+        source_record=json.loads(record.to_jsonl()),
     )
 
     # 3) Categorizzazione (passata 1: regole)

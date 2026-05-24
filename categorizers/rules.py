@@ -8,14 +8,14 @@ fra i ``DA_CHIARIRE`` da passare a Claude.
 
 Le soglie restano costanti modulo e sono importate dal pipeline.
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Iterable
-
-from scanners._base import FileRecord
+from collections.abc import Iterable
+from datetime import UTC, datetime
 
 from categorizers._enums import Categoria
+from scanners._base import FileRecord
 
 # ----------------------------------------------------------------- soglie
 # Cutoff confidence per dire "regola sicura, niente Claude".
@@ -65,14 +65,14 @@ _LIVE_PATH_TOKENS: tuple[str, ...] = (
 
 def _now() -> datetime:
     """Wrappa ``datetime.now`` per essere mockabile nei test."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _age_days(mtime: datetime) -> int:
     """Età del file in giorni, robusta a mtime naive/aware."""
     now = _now()
     if mtime.tzinfo is None:
-        mtime = mtime.replace(tzinfo=timezone.utc)
+        mtime = mtime.replace(tzinfo=UTC)
     delta = now - mtime
     return max(delta.days, 0)
 
@@ -89,7 +89,7 @@ def score(record: FileRecord) -> dict[Categoria, float]:
     Tutti i segnali sono additivi e poi clampati, in modo che l'aggiunta di
     una nuova regola non possa "esplodere" oltre 1.
     """
-    scores: dict[Categoria, float] = {c: 0.0 for c in Categoria}
+    scores: dict[Categoria, float] = dict.fromkeys(Categoria, 0.0)
 
     # --- segnale 1: età ---------------------------------------------------
     age = _age_days(record.mtime)

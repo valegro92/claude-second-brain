@@ -20,6 +20,7 @@ Differenze rilevanti:
 
 Setup richiesto lato cliente — vedi ``docs/08-on-premise.md``.
 """
+
 from __future__ import annotations
 
 import logging

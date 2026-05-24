@@ -6,16 +6,18 @@ perimetro e supporta il resume tramite un file di "path già processati"
 
 Niente chiamate di rete, niente OAuth: solo filesystem.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 import mimetypes
 import os
+from collections.abc import Iterator
 from datetime import datetime
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from scanners._base import FileRecord, Scanner
 

@@ -20,6 +20,7 @@ Dipendenze:
     manca, ricade su un PDF minimo cucito a mano (come in
     ``tests/test_extractors.py``).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -27,11 +28,11 @@ import logging
 import os
 import random
 import shutil
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from email.message import EmailMessage
 from pathlib import Path
-from typing import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +53,10 @@ FORNITORI = ["Acciai Lombardi", "Logistica Veneta"]
 
 # Mtime "epoche": il categorizer rules usa l'età, qui generiamo un mix.
 EPOCHE: dict[str, datetime] = {
-    "recente_2024": datetime(2024, 6, 15, tzinfo=timezone.utc),
-    "medio_2022": datetime(2022, 3, 10, tzinfo=timezone.utc),
-    "vecchio_2020": datetime(2020, 9, 1, tzinfo=timezone.utc),
-    "arcaico_2018": datetime(2018, 2, 14, tzinfo=timezone.utc),
+    "recente_2024": datetime(2024, 6, 15, tzinfo=UTC),
+    "medio_2022": datetime(2022, 3, 10, tzinfo=UTC),
+    "vecchio_2020": datetime(2020, 9, 1, tzinfo=UTC),
+    "arcaico_2018": datetime(2018, 2, 14, tzinfo=UTC),
 }
 
 # Mini-PDF cucito a mano (vedi tests/test_extractors.py).
@@ -134,7 +135,7 @@ def _generate_pdf(path: Path, titolo: str, body: str, epoca_dt: datetime) -> Pat
         from reportlab.pdfgen import canvas  # type: ignore[import-not-found]
     except ImportError:
         path.parent.mkdir(parents=True, exist_ok=True)
-        salt = f"%uniq:{path.name}:{titolo}:{epoca_dt.isoformat()}\n".encode("utf-8")
+        salt = f"%uniq:{path.name}:{titolo}:{epoca_dt.isoformat()}\n".encode()
         # Il commento `%` PDF va prima di `%%EOF` per non rompere il trailer.
         eof = b"%%EOF\n"
         payload = _MINIMAL_PDF_BYTES
@@ -293,8 +294,11 @@ def _testo_ordine(cliente: str, anno: int) -> tuple[str, str]:
 
 def _anagrafica_xlsx_rows(soggetti: list[str]) -> list[list[str | int]]:
     return [
-        [s, random.choice(["edilizia", "manifattura", "servizi", "logistica"]),
-         random.randint(500, 5000) * 1000]
+        [
+            s,
+            random.choice(["edilizia", "manifattura", "servizi", "logistica"]),
+            random.randint(500, 5000) * 1000,
+        ]
         for s in soggetti
     ]
 
@@ -388,10 +392,10 @@ def build_dataset(output_dir: Path) -> list[GeneratedFile]:
             destinatario=f"acquisti@{slug}.it",
             oggetto=f"Riepilogo riunione del 2022 - {cliente}",
             corpo=(
-                f"Gentile cliente,\n\nFacciamo seguito alla riunione "
-                f"del 2022 per riepilogare i punti concordati: tempi di "
-                f"consegna, listino prezzi, modalità di pagamento.\n\n"
-                f"Restiamo a disposizione."
+                "Gentile cliente,\n\nFacciamo seguito alla riunione "
+                "del 2022 per riepilogare i punti concordati: tempi di "
+                "consegna, listino prezzi, modalità di pagamento.\n\n"
+                "Restiamo a disposizione."
             ),
             epoca_dt=EPOCHE["medio_2022"],
         )
@@ -546,16 +550,18 @@ def build_dataset(output_dir: Path) -> list[GeneratedFile]:
         idx = len(generated) + 1
         soggetto = random.choice(CLIENTI + FORNITORI)
         epoca_key = random.choice(list(EPOCHE.keys()))
-        scelta: Callable[[], tuple[Path, str]] = random.choice([
-            lambda: (
-                riempitivi_dir / f"nota_{idx:03d}.txt",
-                "txt",
-            ),
-            lambda: (
-                riempitivi_dir / f"memo_{idx:03d}.docx",
-                "docx",
-            ),
-        ])
+        scelta: Callable[[], tuple[Path, str]] = random.choice(
+            [
+                lambda: (
+                    riempitivi_dir / f"nota_{idx:03d}.txt",
+                    "txt",
+                ),
+                lambda: (
+                    riempitivi_dir / f"memo_{idx:03d}.docx",
+                    "docx",
+                ),
+            ]
+        )
         target_path, tipo = scelta()
         if tipo == "txt":
             p = _generate_txt(
@@ -585,9 +591,7 @@ def build_dataset(output_dir: Path) -> list[GeneratedFile]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Genera il dataset pilota per i test E2E."
-    )
+    parser = argparse.ArgumentParser(description="Genera il dataset pilota per i test E2E.")
     parser.add_argument(
         "--output",
         type=Path,

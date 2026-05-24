@@ -12,10 +12,11 @@ Copertura:
   * Placeholder progressivi e stabili: 3 email → ``<email-1>``, ``<email-2>``,
     ``<email-3>``.
 """
+
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from datetime import UTC
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -53,9 +54,7 @@ class TestGetLLMClient:
         import sys
         import types as _types
 
-        fake_anthropic = _types.SimpleNamespace(
-            Anthropic=lambda api_key=None: _mock_sdk()
-        )
+        fake_anthropic = _types.SimpleNamespace(Anthropic=lambda api_key=None: _mock_sdk())
         monkeypatch.setitem(sys.modules, "anthropic", fake_anthropic)
 
         client = get_llm_client({})
@@ -81,9 +80,7 @@ class TestGetLLMClient:
         import sys
         import types as _types
 
-        fake_anthropic = _types.SimpleNamespace(
-            AnthropicBedrock=lambda aws_region: _mock_sdk()
-        )
+        fake_anthropic = _types.SimpleNamespace(AnthropicBedrock=lambda aws_region: _mock_sdk())
         monkeypatch.setitem(sys.modules, "anthropic", fake_anthropic)
         config = {
             "llm": {
@@ -395,11 +392,7 @@ class TestSafeModeClientE2E:
         sdk = MagicMock()
         # Simula un modello che cita il placeholder nella risposta.
         sdk.messages.create.return_value = SimpleNamespace(
-            content=[
-                SimpleNamespace(
-                    text="Confermo: ho ricevuto il messaggio per <email-1>."
-                )
-            ],
+            content=[SimpleNamespace(text="Confermo: ho ricevuto il messaggio per <email-1>.")],
             usage=SimpleNamespace(input_tokens=20, output_tokens=10),
         )
         inner = AnthropicApiClient(sdk_client=sdk)
@@ -434,17 +427,13 @@ class TestSafeModeClientE2E:
 
     def test_models_eredita_da_inner(self):
         sdk = _mock_sdk()
-        inner = AnthropicApiClient(
-            sdk_client=sdk, model_overrides={"fast": "modello-custom"}
-        )
+        inner = AnthropicApiClient(sdk_client=sdk, model_overrides={"fast": "modello-custom"})
         client = SafeModeClient(inner, state_dir=None)
         assert client.models["fast"] == "modello-custom"
 
     def test_safe_mode_messages_compat(self):
         """SafeModeClient esporrà anche .messages.create per i caller legacy."""
-        sdk = _mock_sdk(
-            text='[{"sha":"x","cat":"VIVO","conf":0.9,"why":"mail a a@x.it"}]'
-        )
+        sdk = _mock_sdk(text='[{"sha":"x","cat":"VIVO","conf":0.9,"why":"mail a a@x.it"}]')
         inner = AnthropicApiClient(sdk_client=sdk)
         client = SafeModeClient(inner, state_dir=None)
         response = client.messages.create(
@@ -467,7 +456,7 @@ class TestIntegrazioneCallerLegacy:
     client costruito via wiki.llm (interfaccia messages.create rispettata)."""
 
     def test_categorize_batch_accetta_llm_client(self, tmp_path):
-        from datetime import datetime, timedelta, timezone
+        from datetime import datetime, timedelta
 
         from categorizers import claude as claude_mod
         from scanners._base import FileRecord
@@ -478,15 +467,13 @@ class TestIntegrazioneCallerLegacy:
             path="generica/x.pdf",
             name="x.pdf",
             size=1000,
-            mtime=datetime.now(timezone.utc) - timedelta(days=10),
+            mtime=datetime.now(UTC) - timedelta(days=10),
             mime="application/pdf",
             extras={},
             sha256="aa" + "0" * 62,
         )
         sdk = _mock_sdk(
-            text=json.dumps(
-                [{"sha": record.sha256, "cat": "VIVO", "conf": 0.8, "why": "test"}]
-            ),
+            text=json.dumps([{"sha": record.sha256, "cat": "VIVO", "conf": 0.8, "why": "test"}]),
             in_tok=100,
             out_tok=20,
         )

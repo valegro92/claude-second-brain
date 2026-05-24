@@ -12,6 +12,7 @@ Usato dal cantiere RECONCILER per il dedup hash-based. I record senza
 ``sha256`` (es. file Drive non ancora scaricati) vengono raccolti in una
 chiave speciale ``"__missing__"`` per facilitare il follow-up.
 """
+
 from __future__ import annotations
 
 import json

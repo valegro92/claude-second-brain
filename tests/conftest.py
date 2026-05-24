@@ -19,13 +19,13 @@ I marker sono auto-skipped da una hook ``pytest_collection_modifyitems``
 quando il binario/modulo non è disponibile, in modo che la CI minimal
 (senza pandoc/tesseract installati) non rompa.
 """
+
 from __future__ import annotations
 
 import importlib.util
 import shutil
 
 import pytest
-
 
 # --- registrazione marker --------------------------------------------------
 
@@ -60,9 +60,7 @@ def _has_module(name: str) -> bool:
 # --- skip automatico per marker mancanti ----------------------------------
 
 
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     """Applica skip ai test marcati con `requires_*` se la dipendenza manca."""
     skip_pandoc = pytest.mark.skip(reason="binario 'pandoc' non disponibile nell'ambiente")
     skip_tesseract = pytest.mark.skip(reason="binario 'tesseract' non disponibile nell'ambiente")

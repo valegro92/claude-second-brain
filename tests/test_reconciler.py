@@ -1,8 +1,9 @@
 """Test dei reconciler (dedup_hash, dedup_soft, schede, persone)."""
+
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -32,7 +33,7 @@ def _rec(
         path=path,
         name=name,
         size=size,
-        mtime=datetime.now(timezone.utc) - timedelta(days=age_days),
+        mtime=datetime.now(UTC) - timedelta(days=age_days),
         mime=mime,
         sha256=sha256,
         extras=extras or {},
@@ -112,7 +113,9 @@ class TestDedupSoft:
             _rec(name="offerta_v1.pdf", path="clienti/rossi/offerte/offerta_v1.pdf"),
             _rec(name="offerta_v2.pdf", path="clienti/rossi/offerte/offerta_v2.pdf"),
             _rec(name="offerta_v3.pdf", path="clienti/rossi/offerte/offerta_v3.pdf"),
-            _rec(name="offerta_FINAL.pdf", path="clienti/rossi/offerte/offerta_FINAL.pdf", age_days=1),
+            _rec(
+                name="offerta_FINAL.pdf", path="clienti/rossi/offerte/offerta_FINAL.pdf", age_days=1
+            ),
         ]
         clusters = dedup_soft.cluster_soft_dups(recs)
         assert len(clusters) == 1
@@ -259,7 +262,11 @@ class TestSchede:
         # Mock LLM per la sezione narrativa.
         client = MagicMock()
         client.messages.create.return_value = SimpleNamespace(
-            content=[SimpleNamespace(text="## Storia\n\n- 2024: cliente attivo\n\n## Decisioni estratte\n\n- ok")],
+            content=[
+                SimpleNamespace(
+                    text="## Storia\n\n- 2024: cliente attivo\n\n## Decisioni estratte\n\n- ok"
+                )
+            ],
             usage=SimpleNamespace(input_tokens=300, output_tokens=80),
         )
 
@@ -300,7 +307,9 @@ class TestSchede:
         _write_jsonl(tmp_path / "inventory" / "nas.jsonl", recs)
         stats = schede.run_schede(tmp_path, batch_id="b002", call_llm=False)
         assert stats["n_groups"] == 1
-        moc = (tmp_path / "drafts" / "b002" / "scheda-cliente-rossi-srl" / "rossi-srl.md").read_text()
+        moc = (
+            tmp_path / "drafts" / "b002" / "scheda-cliente-rossi-srl" / "rossi-srl.md"
+        ).read_text()
         assert "TODO" in moc
 
 

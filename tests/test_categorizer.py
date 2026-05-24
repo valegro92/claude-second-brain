@@ -3,10 +3,11 @@
 Le chiamate ad Anthropic SDK sono **mockate** con ``unittest.mock``.
 Nessun test contatta API esterne.
 """
+
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -33,7 +34,7 @@ def _record(
     sha256: str | None = None,
 ) -> FileRecord:
     path = path if path is not None else f"clienti/_esempio/{name}"
-    mtime = datetime.now(timezone.utc) - timedelta(days=age_days)
+    mtime = datetime.now(UTC) - timedelta(days=age_days)
     return FileRecord(
         source=source,
         source_id=source_id or f"{source}://{path}",
@@ -156,8 +157,12 @@ class TestCategorizeBatch:
         assert out == []
 
     def test_batch_normale_logga_costo(self, tmp_path: Path):
-        records = [_record(name=f"f{i}.pdf", source_id=f"id{i}", sha256=f"sha{i:062d}") for i in range(3)]
-        payload = [{"sha": r.sha256, "cat": "DA-CONSULTARE", "conf": 0.7, "why": "test"} for r in records]
+        records = [
+            _record(name=f"f{i}.pdf", source_id=f"id{i}", sha256=f"sha{i:062d}") for i in range(3)
+        ]
+        payload = [
+            {"sha": r.sha256, "cat": "DA-CONSULTARE", "conf": 0.7, "why": "test"} for r in records
+        ]
         client = MagicMock()
         client.messages.create.return_value = _mock_response(payload, in_tok=400, out_tok=120)
         out = claude_mod.categorize_batch(
@@ -258,7 +263,9 @@ class TestPipeline:
         client = MagicMock()
         client.messages.create.side_effect = AssertionError("LLM non doveva essere chiamato")
 
-        stats = pipeline.run_categorization(tmp_path, config={"privacy": {"modalita": "safe"}}, client=client)
+        stats = pipeline.run_categorization(
+            tmp_path, config={"privacy": {"modalita": "safe"}}, client=client
+        )
         assert stats["n_total"] == 3
         # Tutti decisi da regola (n_llm = 0).
         assert stats["n_llm"] == 0
@@ -269,7 +276,9 @@ class TestPipeline:
 
     def test_pipeline_con_llm_e_audit(self, tmp_path: Path):
         # 1 record dubbio → finisce a LLM.
-        rec = _record(age_days=500, name="strano.pdf", path="generica/strano.pdf", sha256="aa" + "0" * 62)
+        rec = _record(
+            age_days=500, name="strano.pdf", path="generica/strano.pdf", sha256="aa" + "0" * 62
+        )
         _write_jsonl(tmp_path / "inventory" / "nas.jsonl", [rec])
 
         client = MagicMock()

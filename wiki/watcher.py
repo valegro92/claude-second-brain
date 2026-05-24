@@ -19,6 +19,7 @@ Robustezza:
     evento, comoda da ingestare in osservabilità (loki/elastic) quando il
     watcher gira su una macchina del cliente; default ``text``.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -32,7 +33,7 @@ import time
 import traceback
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -60,15 +61,33 @@ class _JsonFormatter(logging.Formatter):
     """
 
     _RESERVED = {
-        "name", "msg", "args", "levelname", "levelno", "pathname", "filename",
-        "module", "exc_info", "exc_text", "stack_info", "lineno", "funcName",
-        "created", "msecs", "relativeCreated", "thread", "threadName",
-        "processName", "process", "message", "taskName",
+        "name",
+        "msg",
+        "args",
+        "levelname",
+        "levelno",
+        "pathname",
+        "filename",
+        "module",
+        "exc_info",
+        "exc_text",
+        "stack_info",
+        "lineno",
+        "funcName",
+        "created",
+        "msecs",
+        "relativeCreated",
+        "thread",
+        "threadName",
+        "processName",
+        "process",
+        "message",
+        "taskName",
     }
 
     def format(self, record: logging.LogRecord) -> str:
         payload: dict[str, Any] = {
-            "ts": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(),
+            "ts": datetime.fromtimestamp(record.created, tz=UTC).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "msg": record.getMessage(),
@@ -109,10 +128,12 @@ def configure_logging(log_format: str = "text", level: int = logging.INFO) -> No
     if fmt == "json":
         handler.setFormatter(_JsonFormatter())
     else:
-        handler.setFormatter(logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s: %(message)s",
-            datefmt="%H:%M:%S",
-        ))
+        handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s %(levelname)s %(name)s: %(message)s",
+                datefmt="%H:%M:%S",
+            )
+        )
     root.addHandler(handler)
     root.setLevel(level)
 
@@ -188,7 +209,7 @@ def _write_dead_letter(
     # Stacktrace + meta.
     tb = "".join(traceback.format_exception(type(last_error), last_error, last_error.__traceback__))
     manifest = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
         "original_path": str(file_path),
         "attempts": attempts,
         "error_type": type(last_error).__name__,
@@ -326,7 +347,7 @@ def _write_pidfile(state_dir: Path) -> Path:
     state_dir.mkdir(parents=True, exist_ok=True)
     pid_path = state_dir / "watcher.pid"
     pid_path.write_text(
-        f"{os.getpid()}\n{datetime.now(timezone.utc).isoformat()}\n",
+        f"{os.getpid()}\n{datetime.now(UTC).isoformat()}\n",
         encoding="utf-8",
     )
     return pid_path

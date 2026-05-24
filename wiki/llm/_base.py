@@ -23,6 +23,7 @@ Convenzioni:
 * :meth:`LLMClient.vision` è opzionale (per OCR Step 3+). Default: solleva
   ``NotImplementedError``.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -128,7 +129,7 @@ class _MessagesNamespace:
     :func:`categorizers.claude._extract_text` e ``_extract_usage``.
     """
 
-    def __init__(self, llm: "LLMClient") -> None:
+    def __init__(self, llm: LLMClient) -> None:
         self._llm = llm
 
     def create(
@@ -199,8 +200,8 @@ class AnthropicCompatibleMixin:
 
 
 __all__ = [
-    "LLMClient",
     "AnthropicCompatibleMixin",
+    "LLMClient",
     "_LLMResponse",
     "_MessagesNamespace",
 ]

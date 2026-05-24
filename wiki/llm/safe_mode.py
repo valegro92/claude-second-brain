@@ -31,14 +31,16 @@ Note di design:
 * L'ordine dei pattern conta: applichiamo CF e IBAN PRIMA del telefono
   per evitare che un CF venga letto come telefono.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
 import threading
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from ._base import AnthropicCompatibleMixin, LLMClient
 
@@ -204,9 +206,7 @@ def unredact_text(text: str, redact_map: RedactMap) -> str:
     )
 
 
-def _redact_messages(
-    messages: list[dict[str, Any]], redact_map: RedactMap
-) -> list[dict[str, Any]]:
+def _redact_messages(messages: list[dict[str, Any]], redact_map: RedactMap) -> list[dict[str, Any]]:
     """Redact ricorsivo di ``content`` (stringa o lista di blocchi)."""
     out: list[dict[str, Any]] = []
     for msg in messages:
@@ -244,9 +244,9 @@ class SafeModeClient(AnthropicCompatibleMixin, LLMClient):
 
     def __init__(self, inner: LLMClient, state_dir: Path | None = None) -> None:
         """Args:
-            inner: provider sottostante da wrappare.
-            state_dir: cartella ``_status/`` dove salvare la mappa redact.
-                Se ``None``, la mappa vive solo in memoria (utile in test).
+        inner: provider sottostante da wrappare.
+        state_dir: cartella ``_status/`` dove salvare la mappa redact.
+            Se ``None``, la mappa vive solo in memoria (utile in test).
         """
         self._inner = inner
         self.models = dict(inner.models)
@@ -263,9 +263,7 @@ class SafeModeClient(AnthropicCompatibleMixin, LLMClient):
         redacted_messages = _redact_messages(messages, self.redact_map)
         redacted_kwargs = dict(kwargs)
         if "system" in redacted_kwargs:
-            redacted_kwargs["system"] = redact_text(
-                redacted_kwargs["system"], self.redact_map
-            )
+            redacted_kwargs["system"] = redact_text(redacted_kwargs["system"], self.redact_map)
 
         text, usage = self._inner.complete(
             messages=redacted_messages,

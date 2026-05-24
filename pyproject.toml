@@ -60,6 +60,69 @@ packages = ["wiki", "scanners", "extractors", "categorizers", "reconcilers", "ba
 line-length = 100
 target-version = "py311"
 
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP", "ARG", "SIM", "PTH", "RUF"]
+ignore = [
+    "E501",     # line length - gestito dal formatter
+    "ARG002",   # unused method argument - troppi falsi positivi (es. signal handlers)
+    "ARG005",   # unused lambda argument
+    "B008",     # mutable default arg
+    "RUF012",   # mutable class attribute - troppi positivi su Extractor base class
+    "SIM105",   # contextlib.suppress - try/except/pass è più leggibile in alcuni casi
+    "UP028",    # use yield from - cambia semantica in casi sottili
+    "UP042",    # str enum - più chiaro con il subclass esplicito
+    "B023",     # function in loop - intentional in alcuni script
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "ARG001", "ARG002"]
+"_legacy-single-user/*" = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = false
+disallow_untyped_defs = false
+strict_optional = true
+exclude = ["_legacy-single-user/", "_brief/", "vault/", "_fixtures/", "build/", "dist/"]
+
+[[tool.mypy.overrides]]
+module = [
+    "pdfplumber.*", "pypdf.*", "openpyxl.*", "msgraph.*",
+    "googleapiclient.*", "google.*", "anthropic.*", "watchdog.*",
+    "pytesseract.*", "pdf2image.*", "PIL.*", "magic.*",
+    "rapidfuzz.*", "markdownify.*", "docx.*", "boto3.*",
+]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["wiki", "scanners", "extractors", "categorizers", "reconcilers", "batch_ui", "bootstrap"]
+omit = ["*/tests/*", "*/__main__.py", "*/_legacy-single-user/*"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "def __repr__",
+]
+show_missing = true
+precision = 1
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+addopts = "-v --tb=short"
+markers = [
+    "requires_pandoc: skip if pandoc binary not available",
+    "requires_tesseract: skip if tesseract binary not available",
+    "requires_reportlab: skip if reportlab package not installed",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]

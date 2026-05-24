@@ -20,15 +20,17 @@ Note di perimetro:
     O(n_record) dove n è dell'ordine di 50k file al massimo.
   * Niente emoji nei testi prodotti (regola di delivery).
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,7 @@ DORMIENTE_GIORNI = 90
 
 # ---------------------------------------------------------------- modello
 
+
 @dataclass
 class SourceStats:
     """Contatori aggregati per una singola sorgente di inventory."""
@@ -63,7 +66,7 @@ class SourceStats:
 class CategoryStats:
     """Conteggi per categoria, con percentuali."""
 
-    counts: dict[str, int] = field(default_factory=lambda: {c: 0 for c in CATEGORIE})
+    counts: dict[str, int] = field(default_factory=lambda: dict.fromkeys(CATEGORIE, 0))
 
     @property
     def total(self) -> int:
@@ -80,7 +83,7 @@ class CategoryStats:
 class DraftStats:
     """Conteggi bozze (per stato) e batch attivi."""
 
-    counts: dict[str, int] = field(default_factory=lambda: {s: 0 for s in STATI_BOZZA})
+    counts: dict[str, int] = field(default_factory=lambda: dict.fromkeys(STATI_BOZZA, 0))
     batches: list[str] = field(default_factory=list)
 
     @property
@@ -124,6 +127,7 @@ class DashboardData:
 
 # -------------------------------------------------------- helper lettura
 
+
 def _iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
     """Itera le righe JSON di un .jsonl, tollerante a righe corrotte."""
     if not path.exists():
@@ -160,6 +164,7 @@ def _load_inventory(state_dir: Path) -> dict[str, list[dict[str, Any]]]:
 
 
 # ------------------------------------------------------- calcolo metriche
+
 
 def _compute_source_stats(
     inventory: dict[str, list[dict[str, Any]]],
@@ -348,14 +353,14 @@ def _compute_vault_health(vault_dir: Path | None) -> VaultHealth:
 
     # 3) Clienti dormienti: cartelle ``vault/clienti/<slug>/`` con file
     #    modificati l'ultima volta più di N giorni fa.
-    soglia = datetime.now(timezone.utc) - timedelta(days=DORMIENTE_GIORNI)
+    soglia = datetime.now(UTC) - timedelta(days=DORMIENTE_GIORNI)
     clienti_dir = vault_dir / "clienti"
     if clienti_dir.exists():
         for client in sorted(clienti_dir.iterdir()):
             if not client.is_dir() or client.name.startswith("_"):
                 continue
             mtimes = [
-                datetime.fromtimestamp(p.stat().st_mtime, tz=timezone.utc)
+                datetime.fromtimestamp(p.stat().st_mtime, tz=UTC)
                 for p in client.rglob("*")
                 if p.is_file()
             ]
@@ -390,6 +395,7 @@ def _compute_vault_health(vault_dir: Path | None) -> VaultHealth:
 
 
 # ---------------------------------------------------- prossime azioni
+
 
 def _suggest_next_actions(
     sources: list[SourceStats],
@@ -427,15 +433,14 @@ def _suggest_next_actions(
         out.append(f"{len(salute.file_orfani)} file nel vault senza frontmatter: ripulire.")
     # 7) Regola 01-PMI.
     if salute.regola_01_pmi_mancanti:
-        out.append(
-            f"{len(salute.regola_01_pmi_mancanti)} oggetti non conformi alla Regola 01-PMI."
-        )
+        out.append(f"{len(salute.regola_01_pmi_mancanti)} oggetti non conformi alla Regola 01-PMI.")
     if not out:
         out.append("Nessuna azione urgente: vault in salute.")
     return out
 
 
 # ------------------------------------------------------- entry point
+
 
 def collect_metrics(state_dir: Path, vault_dir: Path | None, cliente: str) -> DashboardData:
     """Aggrega tutte le metriche in un :class:`DashboardData`.
@@ -457,7 +462,7 @@ def collect_metrics(state_dir: Path, vault_dir: Path | None, cliente: str) -> Da
     next_actions = _suggest_next_actions(sources, categorie, bozze, salute)
     return DashboardData(
         cliente=cliente,
-        generato_il=datetime.now(timezone.utc),
+        generato_il=datetime.now(UTC),
         sources=sources,
         categorie=categorie,
         bozze=bozze,
@@ -488,7 +493,7 @@ def _render_bar_chart_svg(counts: dict[str, int], width: int = 480, height: int 
     parts: list[str] = [
         f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" '
         f'role="img" aria-label="categorie">',
-        '<style>text{font-family:system-ui,sans-serif;font-size:11px;fill:#333}</style>',
+        "<style>text{font-family:system-ui,sans-serif;font-size:11px;fill:#333}</style>",
     ]
     for i, (cat, val) in enumerate(items):
         bar_h = int((val / max_val) * (height - 40))
@@ -496,8 +501,7 @@ def _render_bar_chart_svg(counts: dict[str, int], width: int = 480, height: int 
         y = height - bar_h - 20
         color = _CAT_COLORS.get(cat, "#666")
         parts.append(
-            f'<rect x="{x}" y="{y}" width="{bar_w - 8}" height="{bar_h}" '
-            f'fill="{color}" rx="2"/>'
+            f'<rect x="{x}" y="{y}" width="{bar_w - 8}" height="{bar_h}" fill="{color}" rx="2"/>'
         )
         parts.append(
             f'<text x="{x + (bar_w - 8) // 2}" y="{y - 4}" text-anchor="middle">{val}</text>'
@@ -577,10 +581,10 @@ def _render_index_md(data: DashboardData) -> str:
     lines.extend(["", "## Salute vault", ""])
     lines.append(f"- File orfani (no frontmatter): {len(data.salute.file_orfani)}")
     lines.append(f"- Persone orfane: {len(data.salute.persone_orfane)}")
-    lines.append(f"- Clienti dormienti (>{DORMIENTE_GIORNI}gg): {len(data.salute.clienti_dormienti)}")
     lines.append(
-        f"- Oggetti non conformi Regola 01-PMI: {len(data.salute.regola_01_pmi_mancanti)}"
+        f"- Clienti dormienti (>{DORMIENTE_GIORNI}gg): {len(data.salute.clienti_dormienti)}"
     )
+    lines.append(f"- Oggetti non conformi Regola 01-PMI: {len(data.salute.regola_01_pmi_mancanti)}")
 
     if data.salute.regola_01_pmi_mancanti:
         lines.extend(["", "### Dettaglio non conformi", ""])
@@ -657,15 +661,15 @@ def generate_dashboard(
 
 __all__ = [
     "CATEGORIE",
-    "STATI_BOZZA",
-    "REGOLA_01_PMI",
     "DORMIENTE_GIORNI",
-    "DashboardData",
-    "SourceStats",
+    "REGOLA_01_PMI",
+    "STATI_BOZZA",
     "CategoryStats",
-    "DraftStats",
-    "VaultHealth",
     "CostStats",
+    "DashboardData",
+    "DraftStats",
+    "SourceStats",
+    "VaultHealth",
     "collect_metrics",
     "generate_dashboard",
 ]

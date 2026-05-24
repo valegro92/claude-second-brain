@@ -37,6 +37,7 @@ Wrapper privacy:
 Vedi ``_brief/04-step-2-tech-plan.md`` sezione 8 e ``docs/08-on-premise.md``
 per la matrice decisionale on-premise.
 """
+
 from __future__ import annotations
 
 import logging
@@ -97,8 +98,7 @@ def get_llm_client(
         region = _get(bedrock_cfg, "region")
         if not region:
             raise RuntimeError(
-                "Provider 'bedrock' richiede config.llm.bedrock.region "
-                "(es. 'eu-west-1')."
+                "Provider 'bedrock' richiede config.llm.bedrock.region (es. 'eu-west-1')."
             )
         inner = BedrockClient(
             region=region,
@@ -107,8 +107,7 @@ def get_llm_client(
         )
     else:
         raise ValueError(
-            f"Provider LLM sconosciuto: {provider!r}. "
-            "Valori ammessi: 'anthropic_api', 'bedrock'."
+            f"Provider LLM sconosciuto: {provider!r}. Valori ammessi: 'anthropic_api', 'bedrock'."
         )
 
     if _get(llm_cfg, "redact_pii", False):
@@ -119,11 +118,11 @@ def get_llm_client(
 
 
 __all__ = [
-    "LLMClient",
     "AnthropicApiClient",
     "BedrockClient",
-    "SafeModeClient",
+    "LLMClient",
     "RedactMap",
+    "SafeModeClient",
     "get_llm_client",
     "redact_text",
     "unredact_text",

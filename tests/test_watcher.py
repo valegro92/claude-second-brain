@@ -6,6 +6,7 @@ venga invocato, ferma il watcher.
 
 Niente segnali POSIX (i test possono girare fuori dal main thread).
 """
+
 from __future__ import annotations
 
 import json
@@ -16,7 +17,6 @@ from typing import Any
 import pytest
 
 from wiki.watcher import InboxHandler, _DebounceState, start_watcher
-
 
 # --- debounce -------------------------------------------------------------
 

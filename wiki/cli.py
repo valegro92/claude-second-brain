@@ -17,13 +17,13 @@ Convenzioni:
   * `--client SLUG` selettiva: se assente e c'è un solo cliente in
     `bootstrap/clients/`, lo usa; se più di uno, errore esplicito.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import os
 import shutil
-import subprocess  # noqa: S404 - usato solo per chiamare i tool di sistema (pandoc/tesseract)
 import sys
 from collections import Counter
 from pathlib import Path
@@ -64,9 +64,7 @@ def _list_clients() -> list[str]:
     if not CLIENTS_DIR.exists():
         return []
     return sorted(
-        p.name
-        for p in CLIENTS_DIR.iterdir()
-        if p.is_dir() and (p / "config.yml").exists()
+        p.name for p in CLIENTS_DIR.iterdir() if p.is_dir() and (p / "config.yml").exists()
     )
 
 
@@ -395,7 +393,9 @@ def reconcile(client: str | None) -> None:
     (out_dir / "by_hash.json").write_text(
         json.dumps(by_hash, indent=2, default=str), encoding="utf-8"
     )
-    click.echo(f"Reconciler: {n_dup_groups} gruppi di duplicati, {n_dup_files} file da deduplicare.")
+    click.echo(
+        f"Reconciler: {n_dup_groups} gruppi di duplicati, {n_dup_files} file da deduplicare."
+    )
     click.echo(f"Output: {out_dir.relative_to(REPO_ROOT)}/by_hash.json")
 
     # Step 3: rigenerazione automatica dashboard se attiva nel config.
@@ -519,7 +519,9 @@ def status(client: str | None) -> None:
             click.echo(f"  {src}: {n} file")
 
     extracted_dir = state_dir / "extracted"
-    n_extracted = sum(1 for p in extracted_dir.iterdir() if p.is_dir()) if extracted_dir.exists() else 0
+    n_extracted = (
+        sum(1 for p in extracted_dir.iterdir() if p.is_dir()) if extracted_dir.exists() else 0
+    )
     click.echo(f"Estratti: {n_extracted}")
 
     drafts_dir = state_dir / "drafts"
@@ -573,7 +575,9 @@ def status(client: str | None) -> None:
 
 @main.command()
 @click.option("--client", default=None, help="Slug cliente.")
-@click.option("--open", "open_browser", is_flag=True, help="Apre la dashboard nel browser di default.")
+@click.option(
+    "--open", "open_browser", is_flag=True, help="Apre la dashboard nel browser di default."
+)
 def dashboard(client: str | None, open_browser: bool) -> None:
     """Genera ``_status/<slug>/dashboard.html`` + ``INDEX.md`` per il cliente."""
     slug = _resolve_client(client)

@@ -11,13 +11,14 @@ Algoritmo:
   3. Cluster con > 1 record producono una bozza con tabella ``CANONICAL``
      candidato (mtime più recente vince) + lista candidati da scartare.
 """
+
 from __future__ import annotations
 
 import logging
 import re
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from scanners._base import FileRecord
 
@@ -28,7 +29,10 @@ logger = logging.getLogger(__name__)
 # `re.IGNORECASE` ovunque.
 SOFT_DUP_PATTERNS: list[re.Pattern[str]] = [
     # "nome copia", "nome copia (2)", "nome copy of", "Copia di nome"
-    re.compile(r"^(?P<base>.+?)[\s_-]*(?:copia(?:\s+di)?|copy(?:\s+of)?)(?:[\s_-]*\(?(?P<n>\d+)\)?)?$", re.I),
+    re.compile(
+        r"^(?P<base>.+?)[\s_-]*(?:copia(?:\s+di)?|copy(?:\s+of)?)(?:[\s_-]*\(?(?P<n>\d+)\)?)?$",
+        re.I,
+    ),
     re.compile(r"^copia\s+di\s+(?P<base>.+)$", re.I),
     # "nome v1", "nome_v12", "nome-V003"
     re.compile(r"^(?P<base>.+?)[\s_-]*v(?P<n>\d+)$", re.I),
@@ -133,9 +137,7 @@ def _render_decision(batch_id: str, idx: int, group: list[FileRecord]) -> str:
     ]
     for r in sorted(group, key=lambda x: x.name):
         role = "CANONICAL" if r is canonical else "candidato-archivio"
-        lines.append(
-            f"| {role} | `{r.name}` | {r.source} | {r.mtime.isoformat()} | {r.size} |"
-        )
+        lines.append(f"| {role} | `{r.name}` | {r.source} | {r.mtime.isoformat()} | {r.size} |")
     lines.extend(
         [
             "",
@@ -192,7 +194,7 @@ def run_dedup_soft(state_dir: Path, batch_id: str) -> dict[str, int]:
 
 __all__ = [
     "SOFT_DUP_PATTERNS",
-    "normalize_base",
     "cluster_soft_dups",
+    "normalize_base",
     "run_dedup_soft",
 ]

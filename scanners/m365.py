@@ -9,13 +9,15 @@ Le chiamate reali sono volutamente uno stub minimale: l'integrazione completa
 (delta queries, multi-site) è tracciata nel brief sezione 2.2 ed entrerà nello
 sprint dedicato.
 """
+
 from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Iterable, Iterator
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 from scanners._base import FileRecord, Scanner
 

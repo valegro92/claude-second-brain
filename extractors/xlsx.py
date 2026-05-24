@@ -1,4 +1,5 @@
 """Extractor XLSX. openpyxl + euristica 'trova tabella vera' per fogli PMI."""
+
 from __future__ import annotations
 
 import logging
@@ -37,16 +38,18 @@ class XlsxExtractor(Extractor):
             from openpyxl import load_workbook  # type: ignore[import-not-found]
         except ImportError:
             warnings.append("openpyxl non installato: estrazione vuota")
-            return ExtractionResult(markdown="", metadata={"engine": "none"},
-                                    warnings=warnings, quality=0.0)
+            return ExtractionResult(
+                markdown="", metadata={"engine": "none"}, warnings=warnings, quality=0.0
+            )
 
         try:
             # ``data_only=True``: ricava il valore calcolato delle formule (se presente nel file).
             wb = load_workbook(filename=str(file_path), data_only=True, read_only=False)
         except Exception as exc:
             warnings.append(f"openpyxl non riesce ad aprire il file: {exc}")
-            return ExtractionResult(markdown="", metadata={"engine": "openpyxl"},
-                                    warnings=warnings, quality=0.0)
+            return ExtractionResult(
+                markdown="", metadata={"engine": "openpyxl"}, warnings=warnings, quality=0.0
+            )
 
         has_macros = bool(getattr(wb, "vba_archive", None))
         has_external_links = bool(getattr(wb, "_external_links", None))
@@ -78,7 +81,9 @@ class XlsxExtractor(Extractor):
             metadata["has_external_links"] = True
             quality = min(quality, 0.3)
         if any(s.get("has_pivots") for s in sheets_meta):
-            warnings.append("Almeno un foglio contiene pivot dinamiche: solo cache statica esportata")
+            warnings.append(
+                "Almeno un foglio contiene pivot dinamiche: solo cache statica esportata"
+            )
             quality = min(quality, 0.3)
         if any(s.get("truncated") for s in sheets_meta):
             warnings.append(f"Tabella molto grande: troncata a {_MAX_ROWS_PER_TABLE} righe")
@@ -129,10 +134,7 @@ def _render_sheet(name: str, grid: list[list], has_pivots: bool) -> tuple[str, d
     # Restringi alle colonne dell'header.
     col_start, col_end = header_cols
     header_cells = [_cell(c) for c in grid[header_row_idx][col_start:col_end]]
-    body_cells = [
-        [_cell(c) for c in (row[col_start:col_end] if row else [])]
-        for row in data_rows
-    ]
+    body_cells = [[_cell(c) for c in (row[col_start:col_end] if row else [])] for row in data_rows]
     parts.append(_table_md(header_cells, body_cells))
 
     # Annotazioni libere: tutto ciò che è prima dell'header o dopo end_idx, o fuori dalle colonne.
@@ -221,4 +223,7 @@ def _excel_addr(row: int, col: int) -> str:
 
 
 def _free_cells(grid: list[list]) -> str:
-    return _collect_free_cells(grid, header_row=-1, end_row=-1, col_start=-1, col_end=-1) or "_(nessuna cella significativa)_"
+    return (
+        _collect_free_cells(grid, header_row=-1, end_row=-1, col_start=-1, col_end=-1)
+        or "_(nessuna cella significativa)_"
+    )

@@ -1,4 +1,5 @@
 """Test del batch_ui: lista batch, cambio stato, flush al vault."""
+
 from __future__ import annotations
 
 import json
@@ -8,7 +9,6 @@ import pytest
 
 from batch_ui.server import create_app
 from categorizers._enums import StatoBozza
-
 
 # ----------------------------- fixtures ------------------------------------
 
@@ -85,6 +85,7 @@ def client(fake_workspace):
 
 
 # ----------------------------- test ----------------------------------------
+
 
 def test_healthz_ok(client):
     """Il watcher fa ping a /healthz: deve sempre rispondere 200."""
@@ -176,7 +177,10 @@ def test_bulk_approve_soglia(client, fake_workspace):
     state = json.loads((fake_workspace["batch"] / "_state.json").read_text(encoding="utf-8"))
     assert state["scheda-rossi-srl.md"]["stato"] == StatoBozza.APPROVED.value
     # le altre restano pending (non in state)
-    assert "dedup-bianchi.md" not in state or state["dedup-bianchi.md"]["stato"] == StatoBozza.PENDING.value
+    assert (
+        "dedup-bianchi.md" not in state
+        or state["dedup-bianchi.md"]["stato"] == StatoBozza.PENDING.value
+    )
 
 
 def test_flush_sposta_approved_e_logga(client, fake_workspace):

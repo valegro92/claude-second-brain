@@ -6,11 +6,13 @@ funzionalmente con un NAS — la pipeline cambia solo per l'etichetta ``source``
 Scenario B (gestionali con DB / web app custom) è escluso v1: workaround
 documentato (Custode esporta CSV/Excel manualmente sul NAS).
 """
+
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from scanners._base import FileRecord
 from scanners.nas import NasScanner

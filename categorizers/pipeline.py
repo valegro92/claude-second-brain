@@ -9,19 +9,20 @@ Aggiorna in-place i JSONL inserendo ``categoria``, ``confidence`` e
 Idempotente: re-eseguito non duplica decisioni (riscrive i JSONL,
 l'audit log è append-only ma è un log, non uno stato).
 """
+
 from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from collections.abc import Iterable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
-
-from scanners._base import FileRecord
+from typing import Any
 
 from categorizers import claude as claude_mod
 from categorizers import rules
 from categorizers._enums import Categoria
+from scanners._base import FileRecord
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ def run_categorization(
                 _append_audit(
                     audit_path,
                     {
-                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "ts": datetime.now(UTC).isoformat(),
                         "source": jsonl.stem,
                         "key": _record_key(r),
                         "stage": "rules",
@@ -170,7 +171,7 @@ def run_categorization(
                 _append_audit(
                     audit_path,
                     {
-                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "ts": datetime.now(UTC).isoformat(),
                         "source": jsonl.stem,
                         "key": _record_key(r),
                         "stage": "claude",

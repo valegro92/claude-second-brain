@@ -14,6 +14,7 @@ Modelli di default (alias logici → model id):
 
 Override possibile via ``config.llm.anthropic_api.model_overrides``.
 """
+
 from __future__ import annotations
 
 import logging

@@ -6,10 +6,11 @@ Coperture:
   * Il subcomando ``wiki dashboard --client SLUG`` del CLI esegue
     senza errori e crea gli output attesi.
 """
+
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -22,8 +23,8 @@ from wiki import cli as cli_module
 from wiki.cli import main
 from wiki.dashboard import collect_metrics, generate_dashboard
 
-
 # ----------------------------------------------------------------- utils
+
 
 class _HtmlSanityChecker(HTMLParser):
     """Mini parser stdlib: conta tag aperti/chiusi e raccoglie testo."""
@@ -36,8 +37,22 @@ class _HtmlSanityChecker(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         # Tag void HTML5: non vanno chiusi.
-        void = {"area", "base", "br", "col", "embed", "hr", "img",
-                "input", "link", "meta", "param", "source", "track", "wbr"}
+        void = {
+            "area",
+            "base",
+            "br",
+            "col",
+            "embed",
+            "hr",
+            "img",
+            "input",
+            "link",
+            "meta",
+            "param",
+            "source",
+            "track",
+            "wbr",
+        }
         if tag not in void:
             self.opened.append(tag)
         if tag == "h1":
@@ -68,6 +83,7 @@ def _assert_html_well_formed(html: str) -> _HtmlSanityChecker:
 
 # ----------------------------------------------------------- fixture
 
+
 @pytest.fixture
 def state_dir(tmp_path: Path) -> Path:
     """Costruisce uno ``_status/<slug>/`` finto e completo per i test."""
@@ -80,34 +96,65 @@ def state_dir(tmp_path: Path) -> Path:
     audit = state / "audit"
     audit.mkdir()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     # 3 record nas: 1 vivo, 1 archivio, 1 da-chiarire.
     r1 = FileRecord(
-        source="nas", source_id="/n/a.pdf", path="commerciale/a.pdf", name="a.pdf",
-        size=1000, mtime=now, sha256="a" * 64,
-        categoria="vivo", confidence=0.9, reason="rules: path",
+        source="nas",
+        source_id="/n/a.pdf",
+        path="commerciale/a.pdf",
+        name="a.pdf",
+        size=1000,
+        mtime=now,
+        sha256="a" * 64,
+        categoria="vivo",
+        confidence=0.9,
+        reason="rules: path",
     )
     r2 = FileRecord(
-        source="nas", source_id="/n/b.pdf", path="vecchio/b.pdf", name="b.pdf",
-        size=1000, mtime=now - timedelta(days=2000), sha256="b" * 64,
-        categoria="archivio", confidence=0.7, reason="rules: age",
+        source="nas",
+        source_id="/n/b.pdf",
+        path="vecchio/b.pdf",
+        name="b.pdf",
+        size=1000,
+        mtime=now - timedelta(days=2000),
+        sha256="b" * 64,
+        categoria="archivio",
+        confidence=0.7,
+        reason="rules: age",
     )
     r3 = FileRecord(
-        source="nas", source_id="/n/c.pdf", path="boh/c.pdf", name="c.pdf",
-        size=1000, mtime=now, sha256="c" * 64,
-        categoria="da-chiarire", confidence=0.3, reason="rules: unclear",
+        source="nas",
+        source_id="/n/c.pdf",
+        path="boh/c.pdf",
+        name="c.pdf",
+        size=1000,
+        mtime=now,
+        sha256="c" * 64,
+        categoria="da-chiarire",
+        confidence=0.3,
+        reason="rules: unclear",
     )
     (inv / "nas.jsonl").write_text(
         "\n".join(r.to_jsonl() for r in (r1, r2, r3)) + "\n", encoding="utf-8"
     )
     # 2 record gdrive non categorizzati.
     r4 = FileRecord(
-        source="gdrive", source_id="g1", path="Drive/x.docx", name="x.docx",
-        size=2000, mtime=now, sha256="d" * 64,
+        source="gdrive",
+        source_id="g1",
+        path="Drive/x.docx",
+        name="x.docx",
+        size=2000,
+        mtime=now,
+        sha256="d" * 64,
     )
     r5 = FileRecord(
-        source="gdrive", source_id="g2", path="Drive/y.docx", name="y.docx",
-        size=2000, mtime=now, sha256="e" * 64,
+        source="gdrive",
+        source_id="g2",
+        path="Drive/y.docx",
+        name="y.docx",
+        size=2000,
+        mtime=now,
+        sha256="e" * 64,
     )
     (inv / "gdrive.jsonl").write_text(
         "\n".join(r.to_jsonl() for r in (r4, r5)) + "\n", encoding="utf-8"
@@ -123,22 +170,50 @@ def state_dir(tmp_path: Path) -> Path:
     cost = state / "cost.jsonl"
     cost.write_text(
         "\n".join(
-            json.dumps(e) for e in [
-                {"ts": "2026-01-01T00:00", "stage": "categorize", "model": "claude-haiku-4-5",
-                 "tokens_in": 1000, "tokens_out": 200, "cost_eur": 0.01},
-                {"ts": "2026-01-02T00:00", "stage": "categorize", "model": "claude-haiku-4-5",
-                 "tokens_in": 1500, "tokens_out": 300, "cost_eur": 0.015},
-                {"ts": "2026-01-03T00:00", "stage": "scheda-narrativa", "model": "claude-sonnet-4-5",
-                 "tokens_in": 3000, "tokens_out": 800, "cost_eur": 0.04},
+            json.dumps(e)
+            for e in [
+                {
+                    "ts": "2026-01-01T00:00",
+                    "stage": "categorize",
+                    "model": "claude-haiku-4-5",
+                    "tokens_in": 1000,
+                    "tokens_out": 200,
+                    "cost_eur": 0.01,
+                },
+                {
+                    "ts": "2026-01-02T00:00",
+                    "stage": "categorize",
+                    "model": "claude-haiku-4-5",
+                    "tokens_in": 1500,
+                    "tokens_out": 300,
+                    "cost_eur": 0.015,
+                },
+                {
+                    "ts": "2026-01-03T00:00",
+                    "stage": "scheda-narrativa",
+                    "model": "claude-sonnet-4-5",
+                    "tokens_in": 3000,
+                    "tokens_out": 800,
+                    "cost_eur": 0.04,
+                },
             ]
-        ) + "\n",
+        )
+        + "\n",
         encoding="utf-8",
     )
 
     # Decisions.jsonl (presente ma non strettamente necessario al calcolo metriche).
     (audit / "decisions.jsonl").write_text(
-        json.dumps({"ts": "2026-01-04T00:00", "batch": "b1", "draft": "d.md",
-                    "action": "approved", "user": "valentino"}) + "\n",
+        json.dumps(
+            {
+                "ts": "2026-01-04T00:00",
+                "batch": "b1",
+                "draft": "d.md",
+                "action": "approved",
+                "user": "valentino",
+            }
+        )
+        + "\n",
         encoding="utf-8",
     )
 
@@ -150,16 +225,20 @@ def state_dir(tmp_path: Path) -> Path:
     (b1 / "draft-1.md").write_text("# 1", encoding="utf-8")
     (b1 / "draft-2.md").write_text("# 2", encoding="utf-8")
     (b1 / "_state.json").write_text(
-        json.dumps({
-            "draft-1.md": {"stato": "approved"},
-            "draft-2.md": {"stato": "pending"},
-        }), encoding="utf-8",
+        json.dumps(
+            {
+                "draft-1.md": {"stato": "approved"},
+                "draft-2.md": {"stato": "pending"},
+            }
+        ),
+        encoding="utf-8",
     )
     b2 = drafts / "2026-05-08"
     b2.mkdir()
     (b2 / "draft-3.md").write_text("# 3", encoding="utf-8")
     (b2 / "_state.json").write_text(
-        json.dumps({"draft-3.md": {"stato": "rejected"}}), encoding="utf-8",
+        json.dumps({"draft-3.md": {"stato": "rejected"}}),
+        encoding="utf-8",
     )
     return state
 
@@ -198,6 +277,7 @@ def vault_dir(tmp_path: Path) -> Path:
 
 
 # ------------------------------------------------------- test collect
+
 
 def test_collect_metrics_counts(state_dir: Path, vault_dir: Path) -> None:
     data = collect_metrics(state_dir, vault_dir, "acme")
@@ -264,6 +344,7 @@ def test_collect_metrics_handles_missing_dirs(tmp_path: Path) -> None:
 
 # ------------------------------------------------------- test render
 
+
 def test_generate_dashboard_writes_files(state_dir: Path, vault_dir: Path, tmp_path: Path) -> None:
     out_html = state_dir / "dashboard.html"
     paths = generate_dashboard(state_dir, vault_dir, out_html, cliente="acme")
@@ -315,6 +396,7 @@ def test_generate_dashboard_minimal_state(tmp_path: Path) -> None:
 
 
 # ------------------------------------------------------- test CLI
+
 
 @pytest.fixture
 def isolated_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
@@ -391,8 +473,13 @@ def test_cli_reconcile_auto_dashboard(isolated_repo: Path) -> None:
     inv = isolated_repo / "_status" / "test" / "inventory"
     inv.mkdir(parents=True, exist_ok=True)
     r = FileRecord(
-        source="nas", source_id="/n/x.pdf", path="x.pdf", name="x.pdf",
-        size=10, mtime=datetime.now(timezone.utc), sha256="f" * 64,
+        source="nas",
+        source_id="/n/x.pdf",
+        path="x.pdf",
+        name="x.pdf",
+        size=10,
+        mtime=datetime.now(UTC),
+        sha256="f" * 64,
     )
     (inv / "nas.jsonl").write_text(r.to_jsonl() + "\n", encoding="utf-8")
 

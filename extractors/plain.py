@@ -1,4 +1,5 @@
 """Extractor passthrough per file di testo (.txt, .md) e tabelle CSV (.csv)."""
+
 from __future__ import annotations
 
 import csv
@@ -47,16 +48,16 @@ class PlainExtractor(Extractor):
 
         # txt / md / markdown
         if len(raw) > _MAX_CHARS:
-            warnings.append(
-                f"File testuale grande ({len(raw)} char), troncato a {_MAX_CHARS}"
-            )
+            warnings.append(f"File testuale grande ({len(raw)} char), troncato a {_MAX_CHARS}")
             raw = raw[:_MAX_CHARS]
 
         quality = 1.0 if raw.strip() else 0.1
         return ExtractionResult(
             markdown=raw,
-            metadata={"format": "markdown" if ext in {".md", ".markdown"} else "text",
-                      "chars": len(raw)},
+            metadata={
+                "format": "markdown" if ext in {".md", ".markdown"} else "text",
+                "chars": len(raw),
+            },
             warnings=warnings,
             quality=quality,
         )

@@ -4,6 +4,7 @@ In v1 non chiamiamo Claude vision: se Tesseract non è installato l'extractor
 restituisce un ExtractionResult con quality=0.0 e un warning chiaro, senza
 sollevare eccezioni (così la pipeline può continuare).
 """
+
 from __future__ import annotations
 
 import logging
@@ -40,9 +41,7 @@ class PdfOcrExtractor(Extractor):
         warnings: list[str] = []
 
         if not _has_tesseract():
-            warnings.append(
-                "Tesseract non installato, OCR saltato — vedi bootstrap/INSTALL.md"
-            )
+            warnings.append("Tesseract non installato, OCR saltato — vedi bootstrap/INSTALL.md")
             return ExtractionResult(
                 markdown="_(OCR non eseguito: Tesseract assente)_",
                 metadata={"engine": "none", "ocr_skipped": True},
@@ -54,9 +53,7 @@ class PdfOcrExtractor(Extractor):
             import pytesseract  # type: ignore[import-not-found]
             from PIL import Image  # noqa: F401 - verifica disponibilità
         except ImportError:
-            warnings.append(
-                "pytesseract/Pillow non installati (extras 'ocr') — OCR saltato"
-            )
+            warnings.append("pytesseract/Pillow non installati (extras 'ocr') — OCR saltato")
             return ExtractionResult(
                 markdown="_(OCR non eseguito: librerie Python mancanti)_",
                 metadata={"engine": "none", "ocr_skipped": True},
@@ -116,6 +113,7 @@ def _rasterize_pdf(file_path: Path, warnings: list[str]) -> list:
     # Tentativo 1: pdf2image (più robusto).
     try:
         from pdf2image import convert_from_path  # type: ignore[import-not-found]
+
         return list(convert_from_path(str(file_path)))
     except ImportError:
         pass

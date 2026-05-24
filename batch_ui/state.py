@@ -5,12 +5,13 @@ mappa draft_name -> {"stato": <StatoBozza>, "edits": <str|None>, "ts": <iso>, "n
 
 Il file e' scritto in modo atomico (write -> rename) per evitare corruzione su crash.
 """
+
 from __future__ import annotations
 
 import json
 import os
 import threading
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -59,7 +60,9 @@ def save_state(batch_dir: Path, state: dict[str, dict[str, Any]]) -> None:
 def get_draft_state(batch_dir: Path, draft_name: str) -> dict[str, Any]:
     """Ritorna lo stato di una singola bozza (default PENDING se non registrato)."""
     state = load_state(batch_dir)
-    return state.get(draft_name, {"stato": StatoBozza.PENDING.value, "edits": None, "ts": None, "note": None})
+    return state.get(
+        draft_name, {"stato": StatoBozza.PENDING.value, "edits": None, "ts": None, "note": None}
+    )
 
 
 def set_draft_state(
@@ -75,7 +78,7 @@ def set_draft_state(
         state = load_state(batch_dir)
         entry = state.get(draft_name, {})
         entry["stato"] = stato.value
-        entry["ts"] = datetime.now(timezone.utc).isoformat()
+        entry["ts"] = datetime.now(UTC).isoformat()
         if edits is not None:
             entry["edits"] = edits
         if note is not None:

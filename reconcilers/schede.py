@@ -18,21 +18,22 @@ Algoritmo:
 Niente auto-flush sul vault: la cartella ``_status/drafts/...`` resta in
 mano alla batch UI per l'approvazione manuale.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
 import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
-
-from scanners._base import FileRecord
+from typing import Any
 
 from categorizers._enums import Categoria
 from categorizers.claude import _estimate_cost_eur, _extract_text, _extract_usage, _log_cost
+from scanners._base import FileRecord
 
 logger = logging.getLogger(__name__)
 
@@ -187,8 +188,10 @@ def group_records(records: Iterable[FileRecord]) -> list[ObjectGroup]:
 
         # Segnale 3: prefisso nel nome file (``rossi-srl_offerta_*``).
         stem = r.name.split(".", 1)[0]
-        m = re.match(r"^([a-z0-9]+(?:[-_][a-z0-9]+)*)[_-](?:offerta|ordine|contratto|fattura|capitolato|preventivo)",
-                     stem.lower())
+        m = re.match(
+            r"^([a-z0-9]+(?:[-_][a-z0-9]+)*)[_-](?:offerta|ordine|contratto|fattura|capitolato|preventivo)",
+            stem.lower(),
+        )
         if m:
             slug = slugify(m.group(1).replace("_", "-"))
             tipo = _detect_tipo_from_path(r.path) or "cliente"
@@ -294,7 +297,7 @@ def _call_narrative(
         _log_cost(
             state_dir,
             {
-                "ts": datetime.now(timezone.utc).isoformat(),
+                "ts": datetime.now(UTC).isoformat(),
                 "stage": "scheda-narrativa",
                 "model": model,
                 "tokens_in": tokens_in,
@@ -319,7 +322,7 @@ def _narrative_placeholder() -> str:
 # ------------------------------------------------------------ rendering
 def _frontmatter(tipo_scheda: str, slug: str, group: ObjectGroup) -> str:
     """Frontmatter YAML standard per le bozze."""
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = datetime.now(UTC).date().isoformat()
     lines = [
         "---",
         f"tipo: {tipo_scheda}",
